@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Features.PostPayment;
+using PaymentGateway.Api.Features.PostPayment.Presentation;
+using PaymentGateway.Api.Infrastructure;
 
-namespace PaymentGateway.Api.Controllers;
+namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 
-[Route("api/[controller]")]
+[Route("api/Payments")]
 [ApiController]
-public class PaymentsController : Controller
+public class GetPaymentsController : Controller
 {
     private readonly PaymentsRepository _paymentsRepository;
 
-    public PaymentsController(PaymentsRepository paymentsRepository)
+    public GetPaymentsController(PaymentsRepository paymentsRepository)
     {
         _paymentsRepository = paymentsRepository;
     }

@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using PaymentGateway.Api.Models.Responses;
+
+using PaymentGateway.Api.Features.PostPayment;
+using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration.GetPayment

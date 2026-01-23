@@ -1,4 +1,6 @@
-﻿namespace PaymentGateway.Api.Models.Responses;
+﻿using PaymentGateway.Api.Shared;
+
+namespace PaymentGateway.Api.Features.PostPayment.Presentation;
 
 public class PostPaymentResponse
 {

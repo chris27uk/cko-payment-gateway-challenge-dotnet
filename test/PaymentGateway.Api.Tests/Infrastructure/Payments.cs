@@ -1,5 +1,5 @@
-using PaymentGateway.Api.Models;
-using PaymentGateway.Api.Models.Responses;
+using PaymentGateway.Api.Features.PostPayment.Presentation;
+using PaymentGateway.Api.Shared;
 
 namespace PaymentGateway.Api.Tests.Infrastructure
 {

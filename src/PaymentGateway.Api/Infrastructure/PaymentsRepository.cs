@@ -1,6 +1,6 @@
-﻿using PaymentGateway.Api.Models.Responses;
+﻿using PaymentGateway.Api.Features.PostPayment.Presentation;
 
-namespace PaymentGateway.Api.Services;
+namespace PaymentGateway.Api.Infrastructure;
 
 public class PaymentsRepository
 {

@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
-using PaymentGateway.Api.Controllers;
-using PaymentGateway.Api.Models.Responses;
-using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Features.GetPayment.Presentation;
+using PaymentGateway.Api.Features.PostPayment;
+using PaymentGateway.Api.Features.PostPayment.Presentation;
+using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration
 {
     public class HttpTestSubject : IDisposable
     {
-        private readonly WebApplicationFactory<PaymentsController> _webApplicationFactory;
+        private readonly WebApplicationFactory<GetPaymentsController> _webApplicationFactory;
 
-        private HttpTestSubject(WebApplicationFactory<PaymentsController> webApplicationFactory, HttpClient httpClient)
+        private HttpTestSubject(WebApplicationFactory<GetPaymentsController> webApplicationFactory, HttpClient httpClient)
         {
             this.HttpClient = httpClient;
             this._webApplicationFactory = webApplicationFactory;
@@ -34,11 +35,11 @@ namespace PaymentGateway.Api.Tests.Integration
             return new HttpTestSubject(webApplicationFactory, httpClient);
         }
         
-        private static (HttpClient, WebApplicationFactory<PaymentsController>) CreateWebApplicationFactory(
+        private static (HttpClient, WebApplicationFactory<GetPaymentsController>) CreateWebApplicationFactory(
             PaymentsRepository repository,
             bool useValidationFailure)
         {
-            var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
+            var webApplicationFactory = new WebApplicationFactory<GetPaymentsController>();
             var httpClient = webApplicationFactory.WithWebHostBuilder(builder =>
                 builder.ConfigureServices(services =>
                 {
