@@ -9,9 +9,17 @@ namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 [ApiController]
 public class GetPaymentController(FakePaymentsRepository paymentsRepository) : Controller
 {
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<GetPaymentResponse?>> GetPaymentAsync(Guid id)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new GetPaymentResponse
+            {
+                Status = PaymentStatus.Rejected
+            });
+        }
+        
         var payment = paymentsRepository.Get(id);
 
         if (payment == null)
