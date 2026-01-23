@@ -15,6 +15,9 @@ namespace PaymentGateway.Api.Features.PostPayment
             var cardNumber = new CardNumber(request.CardNumber);
             var authorisationRequest = new AuthorisationRequest(cardNumber, expiryDate, request.Currency, request.Amount, request.Cvv);
             var response = acquiringBankGateway.AuthorisePayment(authorisationRequest);
+            
+            repository.Add(request.ToSuccessfulResponse(response));
+            
             return new PostPaymentResponse
             {
                 Amount = request.Amount,
