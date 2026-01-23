@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-
 using PaymentGateway.Api.Features.GetPayment.Presentation;
-using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
 
@@ -22,7 +20,7 @@ namespace PaymentGateway.Api.Tests.Integration
 
         public static HttpTestSubject WithExistingPayment(PostPaymentResponse payment, bool useValidationFailure = false)
         {
-            var repository = new PaymentsRepository();
+            var repository = new FakePaymentsRepository();
             repository.Add(payment);
             
             var (httpClient, webApplicationFactory) = CreateWebApplicationFactory(repository, useValidationFailure);
@@ -31,12 +29,12 @@ namespace PaymentGateway.Api.Tests.Integration
         
         public static HttpTestSubject WithNoPriorPayments(bool useValidationFailure = false)
         {
-            var (httpClient, webApplicationFactory) = CreateWebApplicationFactory(new PaymentsRepository(), useValidationFailure);
+            var (httpClient, webApplicationFactory) = CreateWebApplicationFactory(new FakePaymentsRepository(), useValidationFailure);
             return new HttpTestSubject(webApplicationFactory, httpClient);
         }
         
         private static (HttpClient, WebApplicationFactory<GetPaymentsController>) CreateWebApplicationFactory(
-            PaymentsRepository repository,
+            FakePaymentsRepository repository,
             bool useValidationFailure)
         {
             var webApplicationFactory = new WebApplicationFactory<GetPaymentsController>();

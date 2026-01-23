@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
 
@@ -10,9 +9,9 @@ namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 [ApiController]
 public class GetPaymentsController : Controller
 {
-    private readonly PaymentsRepository _paymentsRepository;
+    private readonly FakePaymentsRepository _paymentsRepository;
 
-    public GetPaymentsController(PaymentsRepository paymentsRepository)
+    public GetPaymentsController(FakePaymentsRepository paymentsRepository)
     {
         _paymentsRepository = paymentsRepository;
     }
