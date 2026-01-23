@@ -2,7 +2,7 @@
 
 namespace PaymentGateway.Api.Infrastructure;
 
-public class FakePaymentsRepository
+public class FakePaymentsRepository : IPaymentsRepository
 {
     public List<PostPaymentResponse> Payments = new();
     
