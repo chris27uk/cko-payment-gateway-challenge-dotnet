@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-
 using PaymentGateway.Api.Features.PostPayment.Contract;
+using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Shared;
 
 namespace PaymentGateway.Api.Features.PostPayment.Presentation
@@ -12,6 +12,11 @@ namespace PaymentGateway.Api.Features.PostPayment.Presentation
         [HttpPost]
         public ActionResult CreatePaymentAsync(PostPaymentRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(request.ToRejectedResponse());
+            }
+            
             var result = createPaymentHandler.Handle(request);
             if (result.Status == PaymentStatus.Rejected)
             {

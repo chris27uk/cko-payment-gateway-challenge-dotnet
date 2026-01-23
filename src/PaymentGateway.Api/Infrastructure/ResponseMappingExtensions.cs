@@ -5,8 +5,13 @@ namespace PaymentGateway.Api.Infrastructure
 {
     public static class ResponseMappingExtensions
     {
-        public static PostPaymentResponse ToRejectedResponse(this PostPaymentRequest request)
+        public static PostPaymentResponse ToRejectedResponse(this PostPaymentRequest? request)
         {
+            if (request == null)
+            {
+                return new PostPaymentResponse { Status = PaymentStatus.Rejected, Id = Guid.Empty };
+            }
+            
             return new PostPaymentResponse
             {
                 Status = PaymentStatus.Rejected,
