@@ -13,11 +13,18 @@ namespace PaymentGateway.Api.Features.PostPayment
         {
             var expiryDate = ExpiryDate.From(request.ExpiryMonth, request.ExpiryYear);
             var cardNumber = new CardNumber(request.CardNumber);
-            var authorisationRequest = new AuthorisationRequest(cardNumber, expiryDate, request.Currency, request.Amount, request.Cvv);
+            var cvv = new Cvv(request.Cvv);
+            var amount = new AuthorisationAmount(request.Amount);
+            var currency = new Currency(request.Currency);
+            var authorisationRequest = new AuthorisationRequest(cardNumber, expiryDate, currency, amount, cvv);
+            
+            if (!cvv.IsValid || !amount.IsValid || !currency.IsValid || !expiryDate.IsValid(dateTimeProvider) || !cardNumber.IsValid)
+            {
+                return request.ToRejectedResponse();
+            }
+            
             var response = acquiringBankGateway.AuthorisePayment(authorisationRequest);
-            
             repository.Add(request.ToSuccessfulResponse(response));
-            
             return new PostPaymentResponse
             {
                 Amount = request.Amount,

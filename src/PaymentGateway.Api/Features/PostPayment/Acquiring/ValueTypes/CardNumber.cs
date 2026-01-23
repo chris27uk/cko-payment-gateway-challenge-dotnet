@@ -4,6 +4,8 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring.ValueTypes
     {
         public static implicit operator CardNumber(string cardNumber) => new(cardNumber);
 
+        public bool IsValid { get; } = cardNumber.Length is >= 14 and <= 19 && cardNumber.All(char.IsDigit);
+
         public override string ToString() => cardNumber;
 
         public int LastFourDigits() => int.Parse(cardNumber[^4..]);
