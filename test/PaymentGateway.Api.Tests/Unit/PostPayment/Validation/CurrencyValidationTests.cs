@@ -1,7 +1,7 @@
 using PaymentGateway.Api.Shared;
 using PaymentGateway.Api.Tests.Infrastructure;
 
-namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation.Rejection
+namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
 {
     public class CurrencyValidationTests
     {
