@@ -7,6 +7,25 @@ namespace PaymentGateway.Api.Tests.Infrastructure
     {
         public static Guid DefaultId = Guid.Parse("c741d457-6d55-4ed2-afdb-f348fcd42e8a");
 
+        public static PostPaymentRequest CreatePaymentToBeSaved(
+            int expiryYear = 2030,
+            int expiryMonth = 11,
+            int amount = 100,
+            string cardNumber = "348001494318264",
+            int cvv = 123,
+            string currency = "GBP")
+        {
+            return new PostPaymentRequest
+            {
+                ExpiryYear = expiryYear,
+                ExpiryMonth = expiryMonth,
+                Amount = amount,
+                Cvv = cvv,
+                CardNumber = cardNumber,
+                Currency = currency
+            };
+        }
+
         public static PostPaymentResponse CreateSavedPayment(
             Guid? id = null,
             int expiryYear = 2030,

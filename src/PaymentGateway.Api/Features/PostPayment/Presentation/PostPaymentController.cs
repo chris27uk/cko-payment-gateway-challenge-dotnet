@@ -7,7 +7,7 @@ namespace PaymentGateway.Api.Features.PostPayment.Presentation
 {
     [Route("api/payments")]
     [ApiController]
-    public class CreatePaymentController(IPostPaymentHandler createPaymentHandler) : Controller
+    public class PostPaymentController(IPostPaymentHandler createPaymentHandler) : Controller
     {
         [HttpPost]
         public ActionResult CreatePaymentAsync(PostPaymentRequest request)
