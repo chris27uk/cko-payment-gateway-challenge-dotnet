@@ -1,15 +1,21 @@
 using PaymentGateway.Api.Features.PostPayment.Contract;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
+using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Shared;
 
 namespace PaymentGateway.Api.Tests.Infrastructure
 {
-    public class FakePostPaymentHandler() : IPostPaymentHandler
+    public class FakePostPaymentHandler(bool useValidationFailure) : IPostPaymentHandler
     {
         public static readonly Guid DefaultAuthorisationCode = Guid.Parse("c741d457-6d55-4ed2-afdb-f348fcd42e8a");
         
         public PostPaymentResponse Handle(PostPaymentRequest request)
         {
+            if (useValidationFailure)
+            {
+                return request.ToRejectedResponse();
+            }
+            
             return new PostPaymentResponse
             {
                 Amount = request.Amount,

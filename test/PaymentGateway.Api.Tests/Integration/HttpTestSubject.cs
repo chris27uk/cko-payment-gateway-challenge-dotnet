@@ -48,7 +48,7 @@ namespace PaymentGateway.Api.Tests.Integration
                     var serviceCollection = (ServiceCollection)services;
                     serviceCollection.AddSingleton<IPaymentsRepository>(repository);
                     serviceCollection.AddSingleton<GetPaymentHandler>();
-                    serviceCollection.AddSingleton<IPostPaymentHandler, FakePostPaymentHandler>(_ => new FakePostPaymentHandler());
+                    serviceCollection.AddSingleton<IPostPaymentHandler, FakePostPaymentHandler>(_ => new FakePostPaymentHandler(useValidationFailure));
                     serviceCollection.AddSingleton(repository);
                 })).CreateClient();
             return (httpClient, webApplicationFactory);

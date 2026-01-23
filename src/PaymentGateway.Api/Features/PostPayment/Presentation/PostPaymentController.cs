@@ -12,7 +12,12 @@ namespace PaymentGateway.Api.Features.PostPayment.Presentation
         [HttpPost]
         public ActionResult CreatePaymentAsync(PostPaymentRequest request)
         {
-            return Ok(createPaymentHandler.Handle(request));
+            var result = createPaymentHandler.Handle(request);
+            if (result.Status == PaymentStatus.Rejected)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
     }
 }
