@@ -1,30 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using PaymentGateway.Api.Infrastructure;
-using PaymentGateway.Api.Shared;
+using PaymentGateway.Api.Features.GetPayment.Contract;
 
 namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 
 [Route("api/Payments")]
 [ApiController]
-public class GetPaymentController(FakePaymentsRepository paymentsRepository) : Controller
+public class GetPaymentController(IGetPaymentHandler paymentHandler) : Controller
 {
     [HttpGet("{id}")]
     public async Task<ActionResult<GetPaymentResponse?>> GetPaymentAsync(Guid id)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(new GetPaymentResponse
-            {
-                Status = PaymentStatus.Rejected
-            });
+            return BadRequest(GetPaymentResponse.Rejected());
         }
         
-        var payment = paymentsRepository.Get(id);
-
+        var payment = paymentHandler.Handle(id);
         if (payment == null)
         {
-            return NotFound(new GetPaymentResponse { Status = PaymentStatus.Rejected });
+            return NotFound(GetPaymentResponse.Rejected());
         }
         
         return new OkObjectResult(payment);

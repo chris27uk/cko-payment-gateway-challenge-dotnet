@@ -6,7 +6,12 @@ using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Features.PostPayment
 {
-    public class PostPaymentHandler(IPaymentsRepository repository, IAcquiringBankGateway acquiringBankGateway, IDateTimeProvider dateTimeProvider) : IPostPaymentHandler
+    public class PostPaymentHandler(
+        IPaymentsRepository repository, 
+        IAcquiringBankGateway acquiringBankGateway, 
+        IDateTimeProvider dateTimeProvider,
+        IObscureData obscureData,
+        IObservabilityProbe observabilityProbe) : IPostPaymentHandler
     {
         public PostPaymentResponse Handle(PostPaymentRequest request)
         {
@@ -17,7 +22,7 @@ namespace PaymentGateway.Api.Features.PostPayment
                 request.Amount, 
                 request.Cvv);
             
-            if (!authorisationRequest.Validate(dateTimeProvider))
+            if (!authorisationRequest.Validate(dateTimeProvider, obscureData, observabilityProbe))
             {
                 return request.ToRejectedResponse();
             }

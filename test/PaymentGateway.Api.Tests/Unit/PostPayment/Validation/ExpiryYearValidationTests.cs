@@ -18,6 +18,31 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             Assert.Equal(PaymentStatus.Rejected, response.Status);
         }
         
+        [Theory]
+        [MemberData(nameof(InvalidDates))]
+        public void Given_An_Invalid_Expiry_When_Validating_Then_Does_Not_Save_Payment(int expiryMonth, int expiryYear)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(expiryMonth: expiryMonth, expiryYear: expiryYear);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            subject.PostPaymentHandler.Handle(payment);
+            
+            Assert.Empty(subject.PaymentRepository.Payments);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidDates))]
+        public void Given_An_Invalid_Expiry_When_Validating_Then_Raises_Observability_Event(int expiryMonth, int expiryYear)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(expiryMonth: expiryMonth, expiryYear: expiryYear);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            subject.PostPaymentHandler.Handle(payment);
+
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("ExpiryDate", evt.FieldName);
+        }
+        
         [Fact]
         public void Given_A_Valid_Expiry_On_Boundary_When_Validating_Then_Status_Is_Not_Rejected()
         {

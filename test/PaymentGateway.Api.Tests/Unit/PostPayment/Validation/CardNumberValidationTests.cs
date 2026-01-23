@@ -1,3 +1,4 @@
+using PaymentGateway.Api.Features.PostPayment.Acquiring.ValueTypes;
 using PaymentGateway.Api.Shared;
 using PaymentGateway.Api.Tests.Infrastructure;
 
@@ -31,12 +32,38 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
         
         [Theory]
         [MemberData(nameof(InvalidCardNumbers))]
+        public void Given_An_Invalid_CardNumber_When_Validating_Then_Should_Raise_Observability_Event(string cardNumber)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            subject.PostPaymentHandler.Handle(payment);
+
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("CardNumber", evt.FieldName);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public void Given_An_Invalid_CardNumber_When_Validating_Then_Should_Raise_Observability_Event_Without_PD(string cardNumber)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            subject.PostPaymentHandler.Handle(payment);
+
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.NotEqual(cardNumber.Length > 0 ? "?" : cardNumber[^4..], evt.CustomerIdentifier);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
         public void Given_An_Invalid_CardNumber_When_Validating_Then_Status_Is_Rejected(string cardNumber)
         {
             var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
             var subject = PaymentTestSubject.WithNoPriorPayments();
             
-            var response = subject.PostPaymentHandler.Handle(payment)!;
+            var response = subject.PostPaymentHandler.Handle(payment);
 
             Assert.Equal(PaymentStatus.Rejected, response.Status);
         }

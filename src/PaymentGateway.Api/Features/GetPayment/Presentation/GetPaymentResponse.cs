@@ -11,4 +11,9 @@ public class GetPaymentResponse
     public int ExpiryYear { get; set; }
     public string Currency { get; set; }
     public int Amount { get; set; }
+
+    public static GetPaymentResponse Rejected()
+    {
+        return new GetPaymentResponse { Status = PaymentStatus.Rejected };
+    }
 }

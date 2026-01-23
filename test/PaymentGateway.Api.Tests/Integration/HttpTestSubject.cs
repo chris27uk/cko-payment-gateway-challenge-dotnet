@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 using PaymentGateway.Api.Features.GetPayment;
+using PaymentGateway.Api.Features.GetPayment.Contract;
 using PaymentGateway.Api.Features.GetPayment.Presentation;
 using PaymentGateway.Api.Features.PostPayment.Contract;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
@@ -47,7 +48,7 @@ namespace PaymentGateway.Api.Tests.Integration
                 {
                     var serviceCollection = (ServiceCollection)services;
                     serviceCollection.AddSingleton<IPaymentsRepository>(repository);
-                    serviceCollection.AddSingleton<GetPaymentHandler>();
+                    serviceCollection.AddSingleton<IGetPaymentHandler, GetPaymentHandler>();
                     serviceCollection.AddSingleton<IPostPaymentHandler, FakePostPaymentHandler>(_ => new FakePostPaymentHandler(useValidationFailure));
                     serviceCollection.AddSingleton(repository);
                 })).CreateClient();

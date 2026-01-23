@@ -1,9 +1,10 @@
+using PaymentGateway.Api.Features.GetPayment.Contract;
 using PaymentGateway.Api.Features.GetPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Features.GetPayment
 {
-    public class GetPaymentHandler(IPaymentsRepository paymentRepository)
+    public class GetPaymentHandler(IPaymentsRepository paymentRepository) : IGetPaymentHandler
     {
         public GetPaymentResponse? Handle(Guid paymentId)
         {

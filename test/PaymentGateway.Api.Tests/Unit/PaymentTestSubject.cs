@@ -14,7 +14,9 @@ namespace PaymentGateway.Api.Tests.Unit
         {
             this.PaymentRepository = repository;
             this.GetPaymentsHandler = new GetPaymentHandler(repository);
-            this.PostPaymentHandler = new PostPaymentHandler(repository, acquiringBankGateway, dateTimeProvider);
+            this.ObservabilityProbe = new FakeObservabilityProbe();
+            this.Obfuscation = new FakeObfuscation();
+            this.PostPaymentHandler = new PostPaymentHandler(repository, acquiringBankGateway, dateTimeProvider, this.Obfuscation, this.ObservabilityProbe);
             this.AcquiringBankGateway = acquiringBankGateway;
         }
         
@@ -25,6 +27,10 @@ namespace PaymentGateway.Api.Tests.Unit
         public PostPaymentHandler PostPaymentHandler { get; }
         
         public FakeAcquiringBankGateway AcquiringBankGateway { get; }
+        
+        public FakeObservabilityProbe ObservabilityProbe { get; }
+        
+        public FakeObfuscation Obfuscation { get; }
         
         public static PaymentTestSubject WithPayment(PostPaymentResponse savedPayment)
         {

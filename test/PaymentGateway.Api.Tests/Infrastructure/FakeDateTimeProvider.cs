@@ -1,6 +1,6 @@
 using PaymentGateway.Api.Infrastructure;
 
-namespace PaymentGateway.Api.Tests.Unit
+namespace PaymentGateway.Api.Tests.Infrastructure
 {
     public class FakeDateTimeProvider(DateTime now) : IDateTimeProvider
     {
