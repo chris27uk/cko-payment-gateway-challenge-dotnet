@@ -1,5 +1,3 @@
-using System.Runtime.Loader;
-
 using PaymentGateway.Api.Features.PostPayment.Acquiring.ValueTypes;
 using PaymentGateway.Api.Shared;
 using PaymentGateway.Api.Tests.Infrastructure;

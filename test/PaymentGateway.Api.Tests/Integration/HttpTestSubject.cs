@@ -7,6 +7,7 @@ using PaymentGateway.Api.Features.GetPayment.Presentation;
 using PaymentGateway.Api.Features.PostPayment.Contract;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
+using PaymentGateway.Api.Infrastructure.Persistence;
 using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration
@@ -25,16 +26,14 @@ namespace PaymentGateway.Api.Tests.Integration
 
         public static HttpTestSubject WithExistingPayment(PostPaymentResponse payment, bool useValidationFailure = false)
         {
-            var repository = new FakePaymentsRepository();
-            repository.Add(payment);
-            
+            var repository = new FakePaymentsRepository(false, false, [payment]);
             var (httpClient, webApplicationFactory) = CreateWebApplicationFactory(repository, useValidationFailure);
             return new HttpTestSubject(webApplicationFactory, httpClient);
         }
         
         public static HttpTestSubject WithNoPriorPayments(bool useValidationFailure = false)
         {
-            var (httpClient, webApplicationFactory) = CreateWebApplicationFactory(new FakePaymentsRepository(), useValidationFailure);
+            var (httpClient, webApplicationFactory) = CreateWebApplicationFactory(new FakePaymentsRepository(false,false, []), useValidationFailure);
             return new HttpTestSubject(webApplicationFactory, httpClient);
         }
         

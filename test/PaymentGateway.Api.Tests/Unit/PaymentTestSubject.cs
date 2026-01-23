@@ -3,6 +3,7 @@ using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Acquiring;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
+using PaymentGateway.Api.Infrastructure.Persistence;
 using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Unit
@@ -14,10 +15,12 @@ namespace PaymentGateway.Api.Tests.Unit
         private PaymentTestSubject(FakePaymentsRepository repository, FakeAcquiringBankGateway acquiringBankGateway, FakeDateTimeProvider dateTimeProvider)
         {
             this.PaymentRepository = repository;
-            this.GetPaymentsHandler = new GetPaymentHandler(repository);
+            this.GetPaymentsHandler = new GetPaymentHandler(new ResilientPaymentsRepository(repository));
             this.ObservabilityProbe = new FakeObservabilityProbe();
             this.Obfuscation = new FakeObfuscation();
-            this.PostPaymentHandler = new PostPaymentHandler(repository, new AcquiringBankResiliency(acquiringBankGateway), dateTimeProvider, new ObscureLogs(this.ObservabilityProbe, this.Obfuscation));
+            var resilientAcquiringBankGateway = new AcquiringBankResiliency(acquiringBankGateway);
+            var secureObservabilityProbe = new ObscureLogs(this.ObservabilityProbe, this.Obfuscation);
+            this.PostPaymentHandler = new PostPaymentHandler(new ResilientPaymentsRepository(repository), resilientAcquiringBankGateway, dateTimeProvider, secureObservabilityProbe);
             this.AcquiringBankGateway = acquiringBankGateway;
         }
         
@@ -33,11 +36,12 @@ namespace PaymentGateway.Api.Tests.Unit
         
         public FakeObfuscation Obfuscation { get; }
         
-        public static PaymentTestSubject WithPayment(PostPaymentResponse savedPayment)
+        public static PaymentTestSubject WithPriorPayment(PostPaymentResponse savedPayment,
+            bool repositoryPermanentlyFails = false,
+            bool repositoryFailsAndRecovers = false)
         {
             var now = new DateTime(2021, 1, 1);
-            var repository = new FakePaymentsRepository();
-            repository.Add(savedPayment);
+            var repository = new FakePaymentsRepository(repositoryFailsAndRecovers, repositoryPermanentlyFails, [savedPayment]);
             return new PaymentTestSubject(repository, new FakeAcquiringBankGateway(false, false, false, true, DefaultAuthCode), new FakeDateTimeProvider(now));
         }
 
@@ -45,6 +49,8 @@ namespace PaymentGateway.Api.Tests.Unit
             Guid? authCode = null, 
             DateTime? now = null, 
             bool shouldAuthorise = true,
+            bool repositoryPermanentlyFails = false,
+            bool repositoryFailsAndRecovers = false,
             bool acquiringBankFailsOnFirstAttempt = false,
             bool acquiringBankAlwaysTransientlyFails = false,
             bool acquiringBankAlwaysFailsInUnexpectedWay = false)
@@ -52,7 +58,8 @@ namespace PaymentGateway.Api.Tests.Unit
             authCode ??= DefaultAuthCode;
             now ??= new DateTime(2021, 1, 1);
             var bankGateway = new FakeAcquiringBankGateway(acquiringBankFailsOnFirstAttempt, acquiringBankAlwaysTransientlyFails, acquiringBankAlwaysFailsInUnexpectedWay, shouldAuthorise, authCode.Value);
-            return new(new FakePaymentsRepository(), bankGateway, new FakeDateTimeProvider(now.Value));
+            var paymentsRepository = new FakePaymentsRepository(repositoryFailsAndRecovers, repositoryPermanentlyFails, []);
+            return new(paymentsRepository, bankGateway, new FakeDateTimeProvider(now.Value));
         }
     }
 }

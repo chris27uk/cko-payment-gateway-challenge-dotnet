@@ -1,6 +1,6 @@
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 
-namespace PaymentGateway.Api.Infrastructure
+namespace PaymentGateway.Api.Infrastructure.Persistence
 {
     public interface IPaymentsRepository
     {

@@ -14,7 +14,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options => {
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddSingleton<FakePaymentsRepository>();
+builder.Services.AddSingleton<FakePaymentsRepository>(_ => new FakePaymentsRepository(false, false, []));
 
 var app = builder.Build();
 
