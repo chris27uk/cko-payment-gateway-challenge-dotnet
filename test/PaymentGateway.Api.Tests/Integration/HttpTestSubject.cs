@@ -1,16 +1,20 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+
+using PaymentGateway.Api.Features.GetPayment;
 using PaymentGateway.Api.Features.GetPayment.Presentation;
+using PaymentGateway.Api.Features.PostPayment.Contract;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
+using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration
 {
     public class HttpTestSubject : IDisposable
     {
-        private readonly WebApplicationFactory<GetPaymentsController> _webApplicationFactory;
+        private readonly WebApplicationFactory<GetPaymentController> _webApplicationFactory;
 
-        private HttpTestSubject(WebApplicationFactory<GetPaymentsController> webApplicationFactory, HttpClient httpClient)
+        private HttpTestSubject(WebApplicationFactory<GetPaymentController> webApplicationFactory, HttpClient httpClient)
         {
             this.HttpClient = httpClient;
             this._webApplicationFactory = webApplicationFactory;
@@ -33,15 +37,18 @@ namespace PaymentGateway.Api.Tests.Integration
             return new HttpTestSubject(webApplicationFactory, httpClient);
         }
         
-        private static (HttpClient, WebApplicationFactory<GetPaymentsController>) CreateWebApplicationFactory(
+        private static (HttpClient, WebApplicationFactory<GetPaymentController>) CreateWebApplicationFactory(
             FakePaymentsRepository repository,
             bool useValidationFailure)
         {
-            var webApplicationFactory = new WebApplicationFactory<GetPaymentsController>();
+            var webApplicationFactory = new WebApplicationFactory<GetPaymentController>();
             var httpClient = webApplicationFactory.WithWebHostBuilder(builder =>
                 builder.ConfigureServices(services =>
                 {
                     var serviceCollection = (ServiceCollection)services;
+                    serviceCollection.AddSingleton<IPaymentsRepository>(repository);
+                    serviceCollection.AddSingleton<GetPaymentHandler>();
+                    serviceCollection.AddSingleton<IPostPaymentHandler, FakePostPaymentHandler>(_ => new FakePostPaymentHandler());
                     serviceCollection.AddSingleton(repository);
                 })).CreateClient();
             return (httpClient, webApplicationFactory);

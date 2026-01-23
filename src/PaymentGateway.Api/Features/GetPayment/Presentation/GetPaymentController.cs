@@ -7,11 +7,11 @@ namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 
 [Route("api/Payments")]
 [ApiController]
-public class GetPaymentsController : Controller
+public class GetPaymentController : Controller
 {
     private readonly FakePaymentsRepository _paymentsRepository;
 
-    public GetPaymentsController(FakePaymentsRepository paymentsRepository)
+    public GetPaymentController(FakePaymentsRepository paymentsRepository)
     {
         _paymentsRepository = paymentsRepository;
     }
