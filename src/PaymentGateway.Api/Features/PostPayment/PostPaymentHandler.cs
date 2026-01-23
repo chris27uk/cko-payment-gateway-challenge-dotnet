@@ -10,7 +10,6 @@ namespace PaymentGateway.Api.Features.PostPayment
         IPaymentsRepository repository, 
         IAcquiringBankGateway acquiringBankGateway, 
         IDateTimeProvider dateTimeProvider,
-        IObscureData obscureData,
         IObservabilityProbe observabilityProbe) : IPostPaymentHandler
     {
         public PostPaymentResponse Handle(PostPaymentRequest request)
@@ -22,7 +21,7 @@ namespace PaymentGateway.Api.Features.PostPayment
                 request.Amount, 
                 request.Cvv);
             
-            if (!authorisationRequest.Validate(dateTimeProvider, obscureData, observabilityProbe))
+            if (!authorisationRequest.Validate(dateTimeProvider, observabilityProbe))
             {
                 return request.ToRejectedResponse();
             }

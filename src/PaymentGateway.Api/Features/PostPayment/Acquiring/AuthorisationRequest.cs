@@ -15,9 +15,9 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
         
         public Cvv Cvv { get; } = cvv;
 
-        public bool Validate(IDateTimeProvider dateTimeProvider, IObscureData obfuscation, IObservabilityProbe observabilityProbe)
+        public bool Validate(IDateTimeProvider dateTimeProvider, IObservabilityProbe observabilityProbe)
         {
-            string customerIdentifier = cardNumber.ToString().Length > 4 ? obfuscation.Obscure(cardNumber.ToString()[^4..]) : string.Empty;
+            string customerIdentifier = cardNumber.ToString().Length > 4 ? cardNumber.ToString()[^4..] : string.Empty;
             if (!cvv.IsValid)
             {
                 observabilityProbe.PaymentRequestRejected("Cvv", customerIdentifier);

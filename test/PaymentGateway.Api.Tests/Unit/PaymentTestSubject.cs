@@ -1,5 +1,6 @@
 using PaymentGateway.Api.Features.GetPayment;
 using PaymentGateway.Api.Features.PostPayment;
+using PaymentGateway.Api.Features.PostPayment.Acquiring;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Tests.Infrastructure;
@@ -16,7 +17,7 @@ namespace PaymentGateway.Api.Tests.Unit
             this.GetPaymentsHandler = new GetPaymentHandler(repository);
             this.ObservabilityProbe = new FakeObservabilityProbe();
             this.Obfuscation = new FakeObfuscation();
-            this.PostPaymentHandler = new PostPaymentHandler(repository, acquiringBankGateway, dateTimeProvider, this.Obfuscation, this.ObservabilityProbe);
+            this.PostPaymentHandler = new PostPaymentHandler(repository, new AcquiringBankResiliency(acquiringBankGateway), dateTimeProvider, new ObscureLogs(this.ObservabilityProbe, this.Obfuscation));
             this.AcquiringBankGateway = acquiringBankGateway;
         }
         
@@ -37,14 +38,21 @@ namespace PaymentGateway.Api.Tests.Unit
             var now = new DateTime(2021, 1, 1);
             var repository = new FakePaymentsRepository();
             repository.Add(savedPayment);
-            return new PaymentTestSubject(repository, new FakeAcquiringBankGateway(true, DefaultAuthCode), new FakeDateTimeProvider(now));
+            return new PaymentTestSubject(repository, new FakeAcquiringBankGateway(false, false, false, true, DefaultAuthCode), new FakeDateTimeProvider(now));
         }
 
-        public static PaymentTestSubject WithNoPriorPayments(Guid? authCode = null, DateTime? now = null, bool shouldAuthorise = true)
+        public static PaymentTestSubject WithNoPriorPayments(
+            Guid? authCode = null, 
+            DateTime? now = null, 
+            bool shouldAuthorise = true,
+            bool acquiringBankFailsOnFirstAttempt = false,
+            bool acquiringBankAlwaysTransientlyFails = false,
+            bool acquiringBankAlwaysFailsInUnexpectedWay = false)
         {
             authCode ??= DefaultAuthCode;
             now ??= new DateTime(2021, 1, 1);
-            return new(new FakePaymentsRepository(), new FakeAcquiringBankGateway(shouldAuthorise, authCode.Value), new FakeDateTimeProvider(now.Value));
+            var bankGateway = new FakeAcquiringBankGateway(acquiringBankFailsOnFirstAttempt, acquiringBankAlwaysTransientlyFails, acquiringBankAlwaysFailsInUnexpectedWay, shouldAuthorise, authCode.Value);
+            return new(new FakePaymentsRepository(), bankGateway, new FakeDateTimeProvider(now.Value));
         }
     }
 }
