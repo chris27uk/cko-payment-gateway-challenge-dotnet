@@ -4,7 +4,7 @@ namespace PaymentGateway.Api.Infrastructure
 {
     public interface IPaymentsRepository
     {
-        PostPaymentResponse Get(Guid id);
+        PostPaymentResponse? Get(Guid id);
 
         void Add(PostPaymentResponse payment);
     }

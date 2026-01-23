@@ -1,10 +1,29 @@
-using PaymentGateway.Api.Features.PostPayment.Presentation;
+using PaymentGateway.Api.Features.GetPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Features.GetPayment
 {
     public class GetPaymentHandler(IPaymentsRepository paymentRepository)
     {
-        public PostPaymentResponse? Handle(Guid paymentId) => paymentRepository.Get(paymentId);
+        public GetPaymentResponse? Handle(Guid paymentId)
+        {
+            var postedResponse = paymentRepository.Get(paymentId);
+
+            if (postedResponse == null)
+            {
+                return null;
+            }
+            
+            return new GetPaymentResponse
+            {
+                ExpiryMonth = postedResponse.ExpiryMonth,
+                ExpiryYear = postedResponse.ExpiryYear,
+                Amount = postedResponse.Amount,
+                CardNumberLastFour = postedResponse.CardNumberLastFour,
+                Currency = postedResponse.Currency,
+                Status = postedResponse.Status,
+                Id = postedResponse.Id
+            };
+        }
     }
 }
