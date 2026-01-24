@@ -1,4 +1,4 @@
-### New payment
+### 1. New payment
 POST https://localhost:7092/api/Payments
 Content-Type: application/json
 
@@ -7,6 +7,14 @@ Content-Type: application/json
   "expiryYear": 2029,
   "currency": "GBP",
   "amount": 1050,
-  "cvv": 123,
+  "cvv": "123",
   "cardNumber": "5186001700008785"
 }
+
+> {%
+    client.global.set("payment_id", response.body.id);
+%}
+
+### 2. Get payment
+GET https://localhost:7092/api/Payments/{{payment_id}}
+Accept: application/json
