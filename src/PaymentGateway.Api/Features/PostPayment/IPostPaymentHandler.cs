@@ -4,6 +4,6 @@ namespace PaymentGateway.Api.Features.PostPayment
 {
     public interface IPostPaymentHandler
     {
-        PostPaymentResponse Handle(PostPaymentRequest request);
+        Task<PostPaymentResponse> Handle(PostPaymentRequest request);
     }
 }

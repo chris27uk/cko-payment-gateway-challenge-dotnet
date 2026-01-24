@@ -12,7 +12,7 @@ namespace PaymentGateway.Api.Features.PostPayment
         IDateTimeProvider dateTimeProvider,
         IObservabilityProbe observabilityProbe) : IPostPaymentHandler
     {
-        public PostPaymentResponse Handle(PostPaymentRequest request)
+        public async Task<PostPaymentResponse> Handle(PostPaymentRequest request)
         {
             var authorisationRequest = new AuthorisationRequest(
                 request.CardNumber, 
@@ -26,7 +26,7 @@ namespace PaymentGateway.Api.Features.PostPayment
                 return request.ToRejectedResponse();
             }
             
-            var authorisationResponse = acquiringBankGateway.AuthorisePayment(authorisationRequest);
+            var authorisationResponse = await acquiringBankGateway.AuthorisePayment(authorisationRequest);
             var paymentResponse = request.ToSuccessfulResponse(authorisationResponse);
             repository.Add(paymentResponse);
             return paymentResponse;

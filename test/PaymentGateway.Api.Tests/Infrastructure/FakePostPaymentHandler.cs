@@ -9,14 +9,14 @@ namespace PaymentGateway.Api.Tests.Infrastructure
     {
         public static readonly Guid DefaultAuthorisationCode = Guid.Parse("c741d457-6d55-4ed2-afdb-f348fcd42e8a");
         
-        public PostPaymentResponse Handle(PostPaymentRequest request)
+        public Task<PostPaymentResponse> Handle(PostPaymentRequest request)
         {
             if (useValidationFailure)
             {
-                return request.ToRejectedResponse();
+                return Task.FromResult(request.ToRejectedResponse());
             }
             
-            return new PostPaymentResponse
+            return Task.FromResult(new PostPaymentResponse
             {
                 Amount = request.Amount,
                 CardNumberLastFour = 1234,
@@ -25,7 +25,7 @@ namespace PaymentGateway.Api.Tests.Infrastructure
                 ExpiryYear = request.ExpiryYear,
                 Id = DefaultAuthorisationCode,
                 Status = PaymentStatus.Authorized
-            };
+            });
         }
     }
 }

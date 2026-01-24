@@ -9,7 +9,7 @@ namespace PaymentGateway.Api.Tests.Integration.GetPayment
 {
     public class NotFoundControllerTests : IAsyncLifetime
     {
-        private HttpResponseMessage _response;
+        private HttpResponseMessage? _response;
 
         [Fact]
         public async Task Given_No_Payment_When_Requesting_A_Payment_Then_Returns_404()
@@ -29,7 +29,7 @@ namespace PaymentGateway.Api.Tests.Integration.GetPayment
             // balancers, and proxies like the Traefik proxy used in major cloud platforms return 404 for
             // infrastructure reasons. The only way to differentiate is to return data in the body,
             // the specification indicates we should only return bodies that conform. 
-            var deserialized = JsonConvert.DeserializeObject<GetPaymentResponse>(await _response.Content.ReadAsStringAsync());
+            var deserialized = JsonConvert.DeserializeObject<GetPaymentResponse>(await _response!.Content.ReadAsStringAsync());
             Assert.Equal(PaymentStatus.Rejected, deserialized.Status);
         }
         

@@ -7,50 +7,50 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
     {
         [Theory]
         [MemberData(nameof(InvalidDates))]
-        public void Given_An_Invalid_Expiry_When_Validating_Then_Throws_With_Expected_Details(int expiryMonth, int expiryYear)
+        public async Task Given_An_Invalid_Expiry_When_Validating_Then_Throws_With_Expected_Details(int expiryMonth, int expiryYear)
         {
             var utcNow = new DateTime(2020, 2, 1, 0, 0, 0, DateTimeKind.Utc);
             var payment = Payments.CreatePaymentToBeSaved(expiryMonth: expiryMonth, expiryYear: expiryYear);
             var subject = PaymentTestSubject.WithNoPriorPayments(now: utcNow);
             
-            var response = subject.PostPaymentHandler.Handle(payment)!;
+            var response = await subject.PostPaymentHandler.Handle(payment);
 
             Assert.Equal(PaymentStatus.Rejected, response.Status);
         }
         
         [Theory]
         [MemberData(nameof(InvalidDates))]
-        public void Given_An_Invalid_Expiry_When_Validating_Then_Does_Not_Save_Payment(int expiryMonth, int expiryYear)
+        public async Task Given_An_Invalid_Expiry_When_Validating_Then_Does_Not_Save_Payment(int expiryMonth, int expiryYear)
         {
             var payment = Payments.CreatePaymentToBeSaved(expiryMonth: expiryMonth, expiryYear: expiryYear);
             var subject = PaymentTestSubject.WithNoPriorPayments();
             
-            subject.PostPaymentHandler.Handle(payment);
+            await subject.PostPaymentHandler.Handle(payment);
             
             Assert.Empty(subject.PaymentRepository.Payments);
         }
         
         [Theory]
         [MemberData(nameof(InvalidDates))]
-        public void Given_An_Invalid_Expiry_When_Validating_Then_Raises_Observability_Event(int expiryMonth, int expiryYear)
+        public async Task Given_An_Invalid_Expiry_When_Validating_Then_Raises_Observability_Event(int expiryMonth, int expiryYear)
         {
             var payment = Payments.CreatePaymentToBeSaved(expiryMonth: expiryMonth, expiryYear: expiryYear);
             var subject = PaymentTestSubject.WithNoPriorPayments();
             
-            subject.PostPaymentHandler.Handle(payment);
+            await subject.PostPaymentHandler.Handle(payment);
 
             var evt = subject.ObservabilityProbe.RejectedEvents.Single();
             Assert.Equal("ExpiryDate", evt.FieldName);
         }
         
         [Fact]
-        public void Given_A_Valid_Expiry_On_Boundary_When_Validating_Then_Status_Is_Not_Rejected()
+        public async Task Given_A_Valid_Expiry_On_Boundary_When_Validating_Then_Status_Is_Not_Rejected()
         {
             var utcNow = new DateTime(2020, 2, 1, 0, 0, 0, DateTimeKind.Utc);
             var payment = Payments.CreatePaymentToBeSaved(expiryMonth: 3, expiryYear: 2020);
             var subject = PaymentTestSubject.WithNoPriorPayments(now: utcNow);
 
-            var response = subject.PostPaymentHandler.Handle(payment);
+            var response = await subject.PostPaymentHandler.Handle(payment);
             
             Assert.Equal(PaymentStatus.Authorized, response.Status);
         }

@@ -17,7 +17,7 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
             return new AuthorisationResponse(authorisationCode, true);
         }
         
-        public static AuthorisationResponse ForRejected()
+        public static AuthorisationResponse ForDeclined()
         {
             return new AuthorisationResponse(null, false);
         }

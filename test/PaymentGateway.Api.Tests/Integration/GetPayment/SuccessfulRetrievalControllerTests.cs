@@ -8,18 +8,18 @@ namespace PaymentGateway.Api.Tests.Integration.GetPayment
 {
     public class GetPaymentControllerTests : IAsyncLifetime
     {
-        private HttpResponseMessage _response;
+        private HttpResponseMessage? _response;
 
         [Fact]
         public void Given_Payment_When_Requesting_A_Payment_Then_Returns_200()
         {
-            Assert.Equal(HttpStatusCode.OK, _response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, _response?.StatusCode);
         }
         
         [Fact]
         public async Task Given_Payment_When_Requesting_A_Payment_Then_Returns_Body()
         {
-            var deserialized = JsonConvert.DeserializeObject<GetPaymentResponse>(await _response.Content.ReadAsStringAsync());
+            var deserialized = JsonConvert.DeserializeObject<GetPaymentResponse>(await _response!.Content.ReadAsStringAsync());
             Assert.Equal(PaymentStatus.Authorized, deserialized.Status);
         }
         

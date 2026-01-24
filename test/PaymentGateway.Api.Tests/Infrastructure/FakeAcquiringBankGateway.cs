@@ -13,27 +13,27 @@ namespace PaymentGateway.Api.Tests.Infrastructure
         
         public List<AuthorisationRequest> Requests { get; } = new();
 
-        public AuthorisationResponse AuthorisePayment(AuthorisationRequest request)
+        public Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request)
         {
             Requests.Add(request);
 
             if (acquiringBankAlwaysFailsTransiently)
             {
-                throw new AcquiringBankTransientError();
+                throw new AcquiringBankTransientError(new HttpRequestException());
             }
             
             if (acquiringBankAlwaysFailsInUnexpectedWay)
             {
-                throw new Exception();
+                throw new HttpRequestException();
             }
             
             if (acquiringBankFailsOnFirstAttempt && _attempts == 0)
             {
                 _attempts++;
-                throw new AcquiringBankTransientError();
+                throw new AcquiringBankTransientError(new HttpRequestException());
             }
 
-            return !shouldAuthorise ? AuthorisationResponse.ForRejected() : AuthorisationResponse.ForAuthorised(authCode);
+            return !shouldAuthorise ? Task.FromResult(AuthorisationResponse.ForDeclined()) : Task.FromResult(AuthorisationResponse.ForAuthorised(authCode));
         }
     }
 }

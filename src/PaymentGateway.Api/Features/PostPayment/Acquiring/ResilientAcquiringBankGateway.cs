@@ -5,11 +5,11 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
 {
     public class ResilientAcquiringBankGateway(IAcquiringBankGateway acquiringBankGateway) : IAcquiringBankGateway
     {
-        private readonly RetryPolicy _policy = Policy.Handle<AcquiringBankTransientError>().Retry();
+        private readonly AsyncRetryPolicy _policy = Policy.Handle<AcquiringBankTransientError>().RetryAsync();
 
-        public AuthorisationResponse AuthorisePayment(AuthorisationRequest request)
+        public async Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request)
         {
-            return _policy.Execute(() => acquiringBankGateway.AuthorisePayment(request));
+            return await _policy.ExecuteAsync(async () => await acquiringBankGateway.AuthorisePayment(request));
         }
     }
 }

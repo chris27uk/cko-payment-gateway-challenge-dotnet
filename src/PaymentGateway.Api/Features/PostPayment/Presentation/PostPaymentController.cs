@@ -10,14 +10,14 @@ namespace PaymentGateway.Api.Features.PostPayment.Presentation
     public class PostPaymentController(IPostPaymentHandler createPaymentHandler) : Controller
     {
         [HttpPost]
-        public ActionResult CreatePaymentAsync(PostPaymentRequest request)
+        public async Task<ActionResult> CreatePaymentAsync(PostPaymentRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(request.ToRejectedResponse());
             }
             
-            var result = createPaymentHandler.Handle(request);
+            var result = await createPaymentHandler.Handle(request);
             if (result.Status == PaymentStatus.Rejected)
             {
                 return BadRequest(result);

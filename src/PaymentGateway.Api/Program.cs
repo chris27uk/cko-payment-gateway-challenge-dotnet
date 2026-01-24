@@ -17,7 +17,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<ApiBehaviorOptions>(options => {
     options.SuppressModelStateInvalidFilter = true;
 });
-builder.Services.AddSingleton<IAcquiringBankGateway>(new ResilientAcquiringBankGateway(new HttpAcquiringBankGateway()));
+
+builder.Services
+    .AddSingleton<IAcquiringBankGateway>(sp => new ResilientAcquiringBankGateway(new HttpAcquiringBankGateway(sp.GetRequiredService<HttpClient>())))
+    .AddHttpClient<IAcquiringBankGateway>();
 builder.Services.AddSingleton<IPostPaymentHandler, PostPaymentHandler>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddSingleton<IObservabilityProbe, FakeObservabilityProbe>();
