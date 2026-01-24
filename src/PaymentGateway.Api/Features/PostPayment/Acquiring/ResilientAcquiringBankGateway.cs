@@ -3,7 +3,7 @@ using Polly.Retry;
 
 namespace PaymentGateway.Api.Features.PostPayment.Acquiring
 {
-    public class AcquiringBankResiliency(IAcquiringBankGateway acquiringBankGateway) : IAcquiringBankGateway
+    public class ResilientAcquiringBankGateway(IAcquiringBankGateway acquiringBankGateway) : IAcquiringBankGateway
     {
         private readonly RetryPolicy _policy = Policy.Handle<AcquiringBankTransientError>().Retry();
 

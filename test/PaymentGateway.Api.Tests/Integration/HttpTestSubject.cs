@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 using PaymentGateway.Api.Features.GetPayment;
-using PaymentGateway.Api.Features.GetPayment.Contract;
 using PaymentGateway.Api.Features.GetPayment.Presentation;
-using PaymentGateway.Api.Features.PostPayment.Contract;
+using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
+using PaymentGateway.Api.Infrastructure.Fakes;
 using PaymentGateway.Api.Infrastructure.Persistence;
 using PaymentGateway.Api.Tests.Infrastructure;
 

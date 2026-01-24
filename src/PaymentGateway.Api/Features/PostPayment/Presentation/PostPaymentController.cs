@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using PaymentGateway.Api.Features.PostPayment.Contract;
+
 using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Shared;
 

@@ -1,4 +1,4 @@
-using PaymentGateway.Api.Features.PostPayment.Contract;
+using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Shared;

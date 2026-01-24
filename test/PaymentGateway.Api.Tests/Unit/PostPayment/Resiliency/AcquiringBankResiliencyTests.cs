@@ -2,7 +2,7 @@ using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Unit.PostPayment.Resiliency
 {
-    public class AcquiringBankResiliencyTests
+    public class ResilientAcquiringBankGatewayTests
     {
         [Fact]
         public void Given_A_Valid_Request_When_Sending_To_Bank_Experiencing_Issues_Then_Retries()

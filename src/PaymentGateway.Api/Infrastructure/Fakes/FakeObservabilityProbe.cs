@@ -1,6 +1,4 @@
-using PaymentGateway.Api.Infrastructure;
-
-namespace PaymentGateway.Api.Tests.Infrastructure
+namespace PaymentGateway.Api.Infrastructure.Fakes
 {
     // In reality this would call out to a real observability system. I usually use application insights or prometheus
     // given no other guidance and would implement as TelemetryClient.TrackEvent.

@@ -3,6 +3,7 @@ using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Acquiring;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure;
+using PaymentGateway.Api.Infrastructure.Fakes;
 using PaymentGateway.Api.Infrastructure.Persistence;
 using PaymentGateway.Api.Tests.Infrastructure;
 
@@ -18,7 +19,7 @@ namespace PaymentGateway.Api.Tests.Unit
             this.GetPaymentsHandler = new GetPaymentHandler(new ResilientPaymentsRepository(repository));
             this.ObservabilityProbe = new FakeObservabilityProbe();
             this.Obfuscation = new FakeObfuscation();
-            var resilientAcquiringBankGateway = new AcquiringBankResiliency(acquiringBankGateway);
+            var resilientAcquiringBankGateway = new ResilientAcquiringBankGateway(acquiringBankGateway);
             var secureObservabilityProbe = new ObscureLogs(this.ObservabilityProbe, this.Obfuscation);
             this.PostPaymentHandler = new PostPaymentHandler(new ResilientPaymentsRepository(repository), resilientAcquiringBankGateway, dateTimeProvider, secureObservabilityProbe);
             this.AcquiringBankGateway = acquiringBankGateway;

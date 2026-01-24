@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using PaymentGateway.Api.Features.GetPayment.Contract;
-
 namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 
 [Route("api/Payments")]

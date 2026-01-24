@@ -1,6 +1,4 @@
-using PaymentGateway.Api.Features.GetPayment.Contract;
 using PaymentGateway.Api.Features.GetPayment.Presentation;
-using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Infrastructure.Persistence;
 
 namespace PaymentGateway.Api.Features.GetPayment

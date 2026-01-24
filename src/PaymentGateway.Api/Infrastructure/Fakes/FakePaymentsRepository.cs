@@ -1,7 +1,7 @@
 ﻿using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure.Persistence;
 
-namespace PaymentGateway.Api.Infrastructure;
+namespace PaymentGateway.Api.Infrastructure.Fakes;
 
 public class FakePaymentsRepository(bool failsAndRecovers, bool permanentlyFails, PostPaymentResponse[] payments) : IPaymentsRepository
 {
