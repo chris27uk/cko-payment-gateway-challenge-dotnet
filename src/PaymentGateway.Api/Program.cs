@@ -9,6 +9,7 @@ using OpenTelemetry.Trace;
 using PaymentGateway.Api.Features.GetPayment;
 using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Acquiring;
+using PaymentGateway.Api.Features.PostPayment.Idempotency;
 using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Infrastructure.Fakes;
 using PaymentGateway.Api.Infrastructure.Observability;
@@ -50,7 +51,15 @@ builder.Services
         PooledConnectionLifetime = TimeSpan.FromMinutes(2) 
     })
     .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
-builder.Services.AddSingleton<IPostPaymentHandler, PostPaymentHandler>();
+
+builder.Services.AddSingleton<IPostPaymentHandler, DeduplicationPostPaymentHandler>(sp =>
+    new DeduplicationPostPaymentHandler(
+        new PostPaymentHandler(
+            sp.GetRequiredService<IPaymentsRepository>(),
+            sp.GetRequiredService<IAcquiringBankGateway>(),
+            sp.GetRequiredService<IDateTimeProvider>(),
+            sp.GetRequiredService<IObservabilityProbe>()
+        ), sp.GetRequiredService<IIdempotencyStoreWithTTL>()));
 builder.Services.AddSingleton<IGetPaymentHandler, GetPaymentHandler>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddSingleton<IObservabilityProbe, ApplicationInsightsTelemetryProbe>();

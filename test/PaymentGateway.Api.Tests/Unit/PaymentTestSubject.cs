@@ -1,6 +1,7 @@
 using PaymentGateway.Api.Features.GetPayment;
 using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Acquiring;
+using PaymentGateway.Api.Features.PostPayment.Idempotency;
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure.Fakes;
 using PaymentGateway.Api.Infrastructure.Persistence;
@@ -18,15 +19,19 @@ namespace PaymentGateway.Api.Tests.Unit
             this.GetPaymentsHandler = new GetPaymentHandler(new ResilientPaymentsRepository(repository));
             this.ObservabilityProbe = new FakeObservabilityProbe();
             var resilientAcquiringBankGateway = new ResilientAcquiringBankGateway(acquiringBankGateway);
-            this.PostPaymentHandler = new PostPaymentHandler(new ResilientPaymentsRepository(repository), resilientAcquiringBankGateway, dateTimeProvider, this.ObservabilityProbe);
+            this.IdempotencyRepository = new FakeIdempotencyRepository();
+            var postPaymentHandler = new PostPaymentHandler(new ResilientPaymentsRepository(repository), resilientAcquiringBankGateway, dateTimeProvider, this.ObservabilityProbe);
+            this.PostPaymentHandler = new DeduplicationPostPaymentHandler(postPaymentHandler, this.IdempotencyRepository);
             this.AcquiringBankGateway = acquiringBankGateway;
         }
+        
+        public FakeIdempotencyRepository IdempotencyRepository { get; }
         
         public FakePaymentsRepository PaymentRepository { get; }
         
         public GetPaymentHandler GetPaymentsHandler { get; }
         
-        public PostPaymentHandler PostPaymentHandler { get; }
+        public IPostPaymentHandler PostPaymentHandler { get; }
         
         public FakeAcquiringBankGateway AcquiringBankGateway { get; }
         
