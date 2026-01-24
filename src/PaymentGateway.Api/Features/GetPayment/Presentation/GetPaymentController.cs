@@ -7,7 +7,7 @@ namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 public class GetPaymentController(IGetPaymentHandler paymentHandler) : Controller
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetPaymentResponse?>> GetPaymentAsync(Guid id)
+    public ActionResult<GetPaymentResponse?> GetPaymentAsync(Guid id)
     {
         if (!ModelState.IsValid)
         {

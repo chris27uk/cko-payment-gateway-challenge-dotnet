@@ -39,8 +39,8 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("ExpiryDate", evt.FieldName);
+            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("ExpiryDate", fieldName);
         }
         
         [Fact]

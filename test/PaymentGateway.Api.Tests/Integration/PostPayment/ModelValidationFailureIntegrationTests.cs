@@ -5,9 +5,11 @@ using PaymentGateway.Api.Shared;
 
 namespace PaymentGateway.Api.Tests.Integration.PostPayment
 {
+    [Collection("Integration")]
     public class ModelValidationFailureControllerTests : IAsyncLifetime
     {
         private HttpResponseMessage? _response;
+        private HttpTestSubject? _subject;
 
         [Fact]
         public void Given_A_Badly_Formatted_Payment_To_Process_When_Creating_A_Payment_Then_Returns_400()
@@ -41,15 +43,18 @@ namespace PaymentGateway.Api.Tests.Integration.PostPayment
 
         public async Task InitializeAsync()
         {
-            var subject = HttpTestSubject.WithNoPriorPayments(useValidationFailure: true);
+            this._subject = HttpTestSubject.WithNoPriorPayments(useValidationFailure: true);
+
             var json = new StringContent(JsonConvert.SerializeObject(CreatePayment()));
             json.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-            this._response = await subject.HttpClient.PostAsync($"/api/Payments", json);
+
+            this._response = await this._subject.HttpClient.PostAsync($"/api/Payments", json);
         }
 
         public Task DisposeAsync()
         {
             this._response?.Dispose();
+            this._subject?.Dispose();
             return Task.CompletedTask;
         }
     }

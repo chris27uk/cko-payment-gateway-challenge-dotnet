@@ -17,34 +17,34 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
 
         public bool Validate(IDateTimeProvider dateTimeProvider, IObservabilityProbe observabilityProbe)
         {
-            string customerIdentifier = cardNumber.ToString().Length > 4 ? cardNumber.ToString()[^4..] : string.Empty;
-            if (!cvv.IsValid)
+            string customerIdentifier = CardNumber.ToString().Length > 4 ? CardNumber.ToString()[^4..] : string.Empty;
+            if (!Cvv.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("Cvv", customerIdentifier);
+                observabilityProbe.PaymentRequestRejected("Cvv");
                 return false;
             }
 
-            if (!amount.IsValid)
+            if (!Amount.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("Amount", customerIdentifier);
+                observabilityProbe.PaymentRequestRejected("Amount");
                 return false;
             }
 
-            if (!currency.IsValid)
+            if (!Currency.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("Currency", customerIdentifier);
+                observabilityProbe.PaymentRequestRejected("Currency");
                 return false;
             }
 
-            if (!expiryDate.IsValid(dateTimeProvider))
+            if (!ExpiryDate.IsValid(dateTimeProvider))
             {
-                observabilityProbe.PaymentRequestRejected("ExpiryDate", customerIdentifier);
+                observabilityProbe.PaymentRequestRejected("ExpiryDate");
                 return false;
             }
             
-            if (!cardNumber.IsValid)
+            if (!CardNumber.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("CardNumber", customerIdentifier);
+                observabilityProbe.PaymentRequestRejected("CardNumber");
                 return false;
             }
 

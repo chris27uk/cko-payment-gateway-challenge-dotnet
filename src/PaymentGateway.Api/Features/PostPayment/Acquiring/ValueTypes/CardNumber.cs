@@ -1,13 +1,13 @@
 namespace PaymentGateway.Api.Features.PostPayment.Acquiring.ValueTypes
 {
-    public class CardNumber(string cardNumber)
+    public class CardNumber(string? cardNumber)
     {
-        public static implicit operator CardNumber(string cardNumber) => new(cardNumber);
+        public static implicit operator CardNumber(string? cardNumber) => new(cardNumber);
 
-        public bool IsValid { get; } = cardNumber.Length is >= 14 and <= 19 && cardNumber.All(char.IsDigit);
+        public bool IsValid { get; } = cardNumber?.Length is >= 14 and <= 19 && cardNumber.All(char.IsDigit);
 
-        public override string ToString() => cardNumber;
+        public override string ToString() => cardNumber!;
 
-        public int LastFourDigits() => int.Parse(cardNumber[^4..]);
+        public int LastFourDigits() => int.Parse(cardNumber![^4..]);
     }
 }

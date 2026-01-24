@@ -14,7 +14,7 @@ namespace PaymentGateway.Api.Infrastructure
                 var response = await client.PostAsJsonAsync("/payments", ToDto(request));
                 response.EnsureSuccessStatusCode();
                 var deserializedResponse = await response.Content.ReadFromJsonAsync<AuthorisationResponseDto>();
-                return deserializedResponse is { Authorised: true } ? AuthorisationResponse.ForAuthorised(new Guid(deserializedResponse.AuthorisationCode)) : AuthorisationResponse.ForDeclined();
+                return deserializedResponse is { Authorised: true } ? AuthorisationResponse.ForAuthorised(new Guid(deserializedResponse.AuthorisationCode!)) : AuthorisationResponse.ForDeclined();
             }
             catch (HttpRequestException hre) when (hre.StatusCode == HttpStatusCode.ServiceUnavailable)
             {
@@ -40,29 +40,25 @@ namespace PaymentGateway.Api.Infrastructure
             public bool Authorised { get; set; }
             
             [JsonPropertyName("authorization_code")]
-            public string AuthorisationCode { get; set; }
+            public string? AuthorisationCode { get; set; }
         }
         
         private class AuthorisationRequestDto
         {
-            public AuthorisationRequestDto()
-            {
-            }
-            
             [JsonPropertyName("card_number")]
-            public string CardNumber { get; set; }
+            public string? CardNumber { get; set; }
             
             [JsonPropertyName("expiry_date")]
-            public string ExpiryDate { get; set; }
+            public string? ExpiryDate { get; set; }
             
             [JsonPropertyName("currency")]
-            public string Currency { get; set; }
+            public string? Currency { get; set; }
             
             [JsonPropertyName("amount")]
             public int Amount { get; set; }
             
             [JsonPropertyName("cvv")]
-            public string Cvv { get; set; }
+            public string? Cvv { get; set; }
         }
     }
 }

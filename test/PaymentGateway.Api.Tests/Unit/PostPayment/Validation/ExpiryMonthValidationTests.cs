@@ -39,21 +39,8 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("ExpiryDate", evt.FieldName);
-        }
-        
-        [Theory]
-        [MemberData(nameof(InvalidMonths))]
-        public async Task Given_An_Invalid_Expiry_Month_When_Validating_Then_Raises_Observability_Event_Without_PD(int expiryMonth)
-        {
-            var payment = Payments.CreatePaymentToBeSaved(expiryMonth: expiryMonth);
-            var subject = PaymentTestSubject.WithNoPriorPayments();
-            
-            await subject.PostPaymentHandler.Handle(payment);
-
-            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.NotEqual(new CardNumber(payment.CardNumber).LastFourDigits().ToString(), evt.CustomerIdentifier);
+            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("ExpiryDate", fieldName);
         }
         
         [Theory]

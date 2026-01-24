@@ -8,9 +8,11 @@ using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration.GetPayment
 {
+    [Collection("Integration")]
     public class ModelValidationFailureControllerTests : IAsyncLifetime
     {
         private HttpResponseMessage? _response;
+        private HttpTestSubject? _subject;
 
         [Fact]
         public void Given_A_Badly_Formatted_Request_When_Retrieving_A_Payment_Then_Returns_400()
@@ -30,12 +32,13 @@ namespace PaymentGateway.Api.Tests.Integration.GetPayment
 
         public async Task InitializeAsync()
         {
-            var subject = HttpTestSubject.WithExistingPayment(Payments.CreateSavedPayment());
-            this._response = await subject.HttpClient.GetAsync($"/api/Payments/ILL_FORMATTED");
+            this._subject = HttpTestSubject.WithExistingPayment(Payments.CreateSavedPayment());
+            this._response = await this._subject.HttpClient.GetAsync($"/api/Payments/ILL_FORMATTED");
         }
 
         public Task DisposeAsync()
         {
+            this._subject?.Dispose();
             this._response?.Dispose();
             return Task.CompletedTask;
         }

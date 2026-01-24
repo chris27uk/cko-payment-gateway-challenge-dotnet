@@ -4,8 +4,13 @@ using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration.PostPayment.Acquiring
 {
-    public class AcquiringTests
+    [Collection("Integration")]
+
+    public class AcquiringTests : IAsyncLifetime
     {
+        private HttpClient? _normalClient;
+        private HttpClient? _brokenClient;
+        
         [Theory]
         [MemberData(nameof(Modes))]
         public async Task Given_A_Request_That_Will_Authorise_When_Authorising_Then_Returns_Authorised(bool useFake)
@@ -90,16 +95,25 @@ namespace PaymentGateway.Api.Tests.Integration.PostPayment.Acquiring
                     scenarioType == ScenarioType.WillAuthorise, 
                     Guid.NewGuid());
             }
-            
-            var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(1000);
+            return new HttpAcquiringBankGateway(scenarioType == ScenarioType.WillFailUnexpectedly ? _brokenClient : _normalClient);
+        }
 
-            if (scenarioType == ScenarioType.WillFailUnexpectedly)
-            {
-                client.BaseAddress = new Uri("http://localhost:8081");
-            }
-            client.BaseAddress = new Uri("http://localhost:8080");
-            return new HttpAcquiringBankGateway(client);
+        public Task InitializeAsync()
+        {
+            _normalClient = new HttpClient();
+            _normalClient.BaseAddress = new Uri("http://localhost:8080");
+            _normalClient.Timeout = TimeSpan.FromSeconds(2);
+            _brokenClient = new HttpClient();
+            _brokenClient.BaseAddress = new Uri("http://localhost:8081");
+            _brokenClient.Timeout = TimeSpan.FromSeconds(2);
+            return Task.CompletedTask;
+        }
+
+        public Task DisposeAsync()
+        {
+            _brokenClient?.Dispose();
+            _normalClient?.Dispose();
+            return Task.CompletedTask;
         }
     }
 

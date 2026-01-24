@@ -6,9 +6,11 @@ using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration.GetPayment
 {
+    [Collection("Integration")]
     public class GetPaymentControllerTests : IAsyncLifetime
     {
         private HttpResponseMessage? _response;
+        private HttpTestSubject? _subject;
 
         [Fact]
         public void Given_Payment_When_Requesting_A_Payment_Then_Returns_200()
@@ -26,12 +28,13 @@ namespace PaymentGateway.Api.Tests.Integration.GetPayment
         public async Task InitializeAsync()
         {
             var payment = Payments.CreateSavedPayment();
-            var testSubject = HttpTestSubject.WithExistingPayment(payment);
-            this._response = await testSubject.HttpClient.GetAsync($"/api/Payments/{payment.Id}");
+            this._subject = HttpTestSubject.WithExistingPayment(payment);
+            this._response = await this._subject.HttpClient.GetAsync($"/api/Payments/{payment.Id}");
         }
 
         public Task DisposeAsync()
         {
+            this._subject?.Dispose();
             this._response?.Dispose();
             return Task.CompletedTask;
         }

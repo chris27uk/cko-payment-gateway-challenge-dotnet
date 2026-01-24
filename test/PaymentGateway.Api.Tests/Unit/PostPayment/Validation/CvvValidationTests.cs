@@ -27,21 +27,8 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("Cvv", evt.FieldName);
-        }
-        
-        [Theory]
-        [MemberData(nameof(InvalidCvvs))]
-        public async Task Given_An_Invalid_Cvv_When_Validating_Then_Raises_Observability_Event_Without_PD(string cvv)
-        {
-            var payment = Payments.CreatePaymentToBeSaved(cvv: cvv);
-            var subject = PaymentTestSubject.WithNoPriorPayments();
-            
-            await subject.PostPaymentHandler.Handle(payment);
-
-            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.NotEqual(new CardNumber(payment.CardNumber).LastFourDigits().ToString(), evt.CustomerIdentifier);
+            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("Cvv", fieldName);
         }
         
         [Theory]

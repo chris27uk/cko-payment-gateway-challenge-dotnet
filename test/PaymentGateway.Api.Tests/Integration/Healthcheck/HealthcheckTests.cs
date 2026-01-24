@@ -2,12 +2,14 @@ using System.Net;
 
 namespace PaymentGateway.Api.Tests.Integration.Healthcheck
 {
+    [Collection("Integration")]
+
     public class HealthcheckTests
     {
         [Fact]
         public async Task TestHealthcheck()
         {
-            var subject = HttpTestSubject.WithNoPriorPayments();
+            using var subject = HttpTestSubject.WithNoPriorPayments();
 
             var response = await subject.HttpClient.GetAsync($"/api/Healthcheck");
 

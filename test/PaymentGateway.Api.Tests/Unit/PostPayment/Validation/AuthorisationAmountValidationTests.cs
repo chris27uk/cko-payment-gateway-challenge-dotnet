@@ -39,21 +39,8 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("Amount", evt.FieldName);
-        }
-        
-        [Theory]
-        [MemberData(nameof(InvalidAmounts))]
-        public async Task Given_An_Invalid_Authorisation_Amount_When_Validating_Then_Should_Raise_Observability_Event_Without_PD(int amount)
-        {
-            var payment = Payments.CreatePaymentToBeSaved(amount: amount);
-            var subject = PaymentTestSubject.WithNoPriorPayments();
-            
-            await subject.PostPaymentHandler.Handle(payment);
-
-            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.NotEqual(new CardNumber(payment.CardNumber).LastFourDigits().ToString(), evt.CustomerIdentifier);
+            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("Amount", fieldName);
         }
         
         [Theory]

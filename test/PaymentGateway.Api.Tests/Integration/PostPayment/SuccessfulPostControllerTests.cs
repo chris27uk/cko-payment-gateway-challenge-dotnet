@@ -7,9 +7,12 @@ using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration.PostPayment
 {
+    [Collection("Integration")]
+
     public class PostPaymentControllerTests : IAsyncLifetime
     {
         private HttpResponseMessage? _response;
+        private HttpTestSubject? _subject;
 
         [Fact]
         public void Given_A_Valid_Payment_To_Process_When_Creating_A_Payment_Then_Returns_200()
@@ -41,14 +44,15 @@ namespace PaymentGateway.Api.Tests.Integration.PostPayment
 
         public async Task InitializeAsync()
         {
-            var subject = HttpTestSubject.WithNoPriorPayments();
+            this._subject = HttpTestSubject.WithNoPriorPayments();
             var json = new StringContent(JsonConvert.SerializeObject(AnyValidPayment()));
             json.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-            this._response = await subject.HttpClient.PostAsync($"/api/Payments", json);
+            this._response = await this._subject.HttpClient.PostAsync($"/api/Payments", json);
         }
 
         public Task DisposeAsync()
         {
+            this._subject?.Dispose();
             this._response?.Dispose();
             return Task.CompletedTask;
         }

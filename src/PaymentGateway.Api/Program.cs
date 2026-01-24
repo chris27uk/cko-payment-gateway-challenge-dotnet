@@ -1,12 +1,17 @@
 using System.Text.Json.Serialization;
 
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
+
+using OpenTelemetry.Logs;
+using OpenTelemetry.Trace;
 
 using PaymentGateway.Api.Features.GetPayment;
 using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Acquiring;
 using PaymentGateway.Api.Infrastructure;
 using PaymentGateway.Api.Infrastructure.Fakes;
+using PaymentGateway.Api.Infrastructure.Observability;
 using PaymentGateway.Api.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,9 +26,20 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddApplicationInsightsTelemetry(options => {
+        options.ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=http://localhost:8080/";
+    });
+}
+
 builder.Services.Configure<ApiBehaviorOptions>(options => {
     options.SuppressModelStateInvalidFilter = true;
 });
+
+builder.Services.AddOpenTelemetry()
+    .WithLogging(logging => logging.AddConsoleExporter())
+    .WithTracing(logging => logging.AddConsoleExporter());
 
 builder.Services
     .AddSingleton<IAcquiringBankGateway>(sp => new ResilientAcquiringBankGateway(new HttpAcquiringBankGateway(sp.GetRequiredService<HttpClient>())))
@@ -37,7 +53,7 @@ builder.Services
 builder.Services.AddSingleton<IPostPaymentHandler, PostPaymentHandler>();
 builder.Services.AddSingleton<IGetPaymentHandler, GetPaymentHandler>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-builder.Services.AddSingleton<IObservabilityProbe, FakeObservabilityProbe>();
+builder.Services.AddSingleton<IObservabilityProbe, ApplicationInsightsTelemetryProbe>();
 builder.Services.AddSingleton<IPaymentsRepository>(_ => new ResilientPaymentsRepository(new FakePaymentsRepository(false, false, [])));
 
 var app = builder.Build();

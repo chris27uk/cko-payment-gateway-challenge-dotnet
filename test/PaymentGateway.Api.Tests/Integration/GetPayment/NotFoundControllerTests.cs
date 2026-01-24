@@ -7,18 +7,16 @@ using PaymentGateway.Api.Shared;
 
 namespace PaymentGateway.Api.Tests.Integration.GetPayment
 {
+    [Collection("Integration")]
     public class NotFoundControllerTests : IAsyncLifetime
     {
         private HttpResponseMessage? _response;
+        private HttpTestSubject? _subject;
 
         [Fact]
-        public async Task Given_No_Payment_When_Requesting_A_Payment_Then_Returns_404()
+        public void Given_No_Payment_When_Requesting_A_Payment_Then_Returns_404()
         {
-            var subject = HttpTestSubject.WithNoPriorPayments();
-        
-            var response = await subject.HttpClient.GetAsync($"/api/Payments/{Guid.NewGuid()}");
-        
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, this._response?.StatusCode);
         }
         
         [Fact]
@@ -35,12 +33,13 @@ namespace PaymentGateway.Api.Tests.Integration.GetPayment
         
         public async Task InitializeAsync()
         {
-            var subject = HttpTestSubject.WithNoPriorPayments();
-            this._response = await subject.HttpClient.GetAsync($"/api/Payments/{Guid.NewGuid()}");
+            this._subject = HttpTestSubject.WithNoPriorPayments();
+            this._response = await this._subject.HttpClient.GetAsync($"/api/Payments/{Guid.NewGuid()}");
         }
 
         public Task DisposeAsync()
         {
+            this._subject?.Dispose();
             this._response?.Dispose();
             return Task.CompletedTask;
         }
