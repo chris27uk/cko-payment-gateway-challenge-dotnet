@@ -111,4 +111,4 @@ flowchart LR
 9. Validation: I have assumed that the requirement for conforming to contract is absolute - and needs to be returned even
    where model validation fails. In reality this would be checked as it caused a slight amount of additional work.
 
-10. Exhaustive testing is generally not considered sensible and I have tested only at boundaries.
+10. Exhaustive testing is generally not considered sensible (and impossible) and I have tested only at boundaries.
