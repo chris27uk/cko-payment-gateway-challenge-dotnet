@@ -19,7 +19,7 @@ namespace PaymentGateway.Api.Infrastructure.Observability
 
         public void DuplicatePaymentRequest(CustomerReference reference)
         {
-            var properties = new Dictionary<string, string> { { "Reference", reference.ToString() } };
+            var properties = new Dictionary<string, string> { { "Reference", reference!.Value.ToString() } };
             client.TrackEvent("DuplicatePaymentRequest", properties);
         }
     }

@@ -81,14 +81,14 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Concurrency
         [Fact]
         public async Task Given_Multiple_Requests_When_Processing_Payment_Then_Returns_Last_Four_Digits()
         {
-            var cardNumber = "4444333322229";
+            var cardNumber = "44443333222290";
             var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
             var subject = PaymentTestSubject.WithNoPriorPayments();
             
             await subject.PostPaymentHandler.Handle(payment);
             var response2 = await subject.PostPaymentHandler.Handle(payment);
             
-            Assert.Equal(2229, response2.CardNumberLastFour);
+            Assert.Equal(2290, response2.CardNumberLastFour);
         }
         
         [Fact]

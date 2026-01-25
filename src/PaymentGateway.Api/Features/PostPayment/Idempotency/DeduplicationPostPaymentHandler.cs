@@ -12,7 +12,7 @@ namespace PaymentGateway.Api.Features.PostPayment.Idempotency
     {
         public async Task<PostPaymentResponse> Handle(PostPaymentRequest request)
         {
-            if (await idempotencyStore.Add(request.CardNumber!, request.Amount))
+            if (await idempotencyStore.Add(request.Reference))
             {
                 return await postPaymentHandler.Handle(request);
             }
