@@ -52,6 +52,7 @@ builder.Services
     })
     .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
+builder.Services.AddSingleton<IIdempotencyStoreWithTTL, FakeIdempotencyRepository>();
 builder.Services.AddSingleton<IPostPaymentHandler, DeduplicationPostPaymentHandler>(GetPostPaymentHandler);
 builder.Services.AddSingleton<IGetPaymentHandler, GetPaymentHandler>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();

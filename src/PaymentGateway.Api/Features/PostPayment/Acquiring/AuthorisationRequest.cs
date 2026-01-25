@@ -3,7 +3,7 @@ using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Features.PostPayment.Acquiring
 {
-    public class AuthorisationRequest(CardNumber cardNumber, ExpiryDate expiryDate, Currency currency, AuthorisationAmount amount, Cvv cvv, Guid reference)
+    public class AuthorisationRequest(CardNumber cardNumber, ExpiryDate expiryDate, Currency currency, AuthorisationAmount amount, Cvv cvv, CustomerReference reference)
     {
         public CardNumber CardNumber { get; } = cardNumber;
         
@@ -13,7 +13,7 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
         
         public AuthorisationAmount Amount { get; } = amount;
 
-        public Guid Reference { get; } = reference;
+        public CustomerReference Reference { get; } = reference;
         
         public Cvv Cvv { get; } = cvv;
 
@@ -46,6 +46,12 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
             if (!CardNumber.IsValid)
             {
                 observabilityProbe.PaymentDataRejected("CardNumber", Reference);
+                return false;
+            }
+
+            if (!Reference.IsValid)
+            {
+                observabilityProbe.PaymentDataRejected("CustomerReference", Reference);
                 return false;
             }
 

@@ -1,7 +1,6 @@
 ### 1. New payment
 POST https://localhost:7092/api/Payments
 Content-Type: application/json
-baggage: customer.id=some_customer
 
 {
   "expiryMonth": 11,
@@ -23,7 +22,6 @@ Accept: application/json
 ### 3. Rejection
 POST https://localhost:7092/api/Payments
 Content-Type: application/json
-baggage: customer.id=some_customer
 
 {
   "expiryMonth": 13,

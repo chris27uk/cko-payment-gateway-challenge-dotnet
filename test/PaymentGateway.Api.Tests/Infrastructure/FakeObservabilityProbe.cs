@@ -1,3 +1,4 @@
+using PaymentGateway.Api.Features.PostPayment.Acquiring.ValueTypes;
 using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Infrastructure
@@ -10,14 +11,14 @@ namespace PaymentGateway.Api.Tests.Infrastructure
         public readonly List<(string FieldName, Guid? CustomerReference)> RejectedEvents = new();
         public readonly List<Guid> DuplicateRequestEvents = new();
 
-        public void DuplicatePaymentRequest(Guid reference)
+        public void DuplicatePaymentRequest(CustomerReference reference)
         {
-            DuplicateRequestEvents.Add(reference);
+            DuplicateRequestEvents.Add(reference.Value);
         }
         
-        public void PaymentDataRejected(string fieldName, Guid? customerReference)
+        public void PaymentDataRejected(string fieldName, CustomerReference customerReference)
         {
-            RejectedEvents.Add((fieldName, customerReference));
+            RejectedEvents.Add((fieldName, customerReference.Value));
         }
     }
 }
