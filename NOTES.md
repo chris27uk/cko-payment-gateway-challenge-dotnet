@@ -55,7 +55,7 @@ flowchart LR
   provided a way to demonstrate the requests using Rider Http Client.
 - **Contract Testing** - I have used a single integration test to test the compliance of the acquiring bank fake
   with the simulation. This is a Contract-Tested Fake and allows for all complexity around using
-  a proxy to be removed.
+  a proxy (e.g. the wiremock reference in the readme) to be removed.
 - **Resiliency** - I have implemented basic resiliency using Polly retry policies (once). This resiliency approach is limited
   by the fact that the banking simulation provided no way of performing a compensating transaction (like a void.) nor there 
   being any existing service bus infrastructure to ensure long failures at the database eventually resolve. For an early
