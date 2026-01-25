@@ -1,15 +1,14 @@
-﻿using PaymentGateway.Api.Features.PostPayment.Presentation;
-using PaymentGateway.Api.Infrastructure.Persistence;
+﻿using PaymentGateway.Api.Infrastructure.Persistence;
 
 namespace PaymentGateway.Api.Infrastructure.Fakes;
 
-public class FakePaymentsRepository(bool failsAndRecovers, bool permanentlyFails, PostPaymentResponse[] payments) : IPaymentsRepository
+public class FakePaymentsRepository(bool failsAndRecovers, bool permanentlyFails, PostPaymentResponseStored[] payments) : IPaymentsRepository
 {
-    public List<PostPaymentResponse> Payments = [..payments];
+    public List<PostPaymentResponseStored> Payments = [..payments];
     
     public int AttemptCount { get; private set; }
     
-    public void Add(PostPaymentResponse payment)
+    public void Add(PostPaymentResponseStored payment)
     {
         AttemptCount++;
         if (failsAndRecovers && AttemptCount == 1)
@@ -25,7 +24,7 @@ public class FakePaymentsRepository(bool failsAndRecovers, bool permanentlyFails
         Payments.Add(payment);
     }
 
-    public PostPaymentResponse? Get(Guid id)
+    public PostPaymentResponseStored? Get(Guid id)
     {
         AttemptCount++;
         

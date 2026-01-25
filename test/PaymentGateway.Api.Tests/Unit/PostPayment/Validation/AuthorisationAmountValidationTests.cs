@@ -1,4 +1,3 @@
-using PaymentGateway.Api.Features.PostPayment.Acquiring.ValueTypes;
 using PaymentGateway.Api.Shared;
 using PaymentGateway.Api.Tests.Infrastructure;
 
@@ -39,8 +38,22 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("Amount", fieldName);
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("Amount", evt.FieldName);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidAmounts))]
+        public async Task Given_An_Invalid_Authorisation_Amount_When_Validating_Then_Should_Raise_Observability_Event_With_Customer_Reference(int amount)
+        {
+            var customerReference = Guid.Parse("3de964a7-659f-42d7-b4e9-4a801863b007");
+            var payment = Payments.CreatePaymentToBeSaved(amount: amount, reference: customerReference);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            await subject.PostPaymentHandler.Handle(payment);
+
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal(customerReference, evt.CustomerReference);
         }
         
         [Theory]

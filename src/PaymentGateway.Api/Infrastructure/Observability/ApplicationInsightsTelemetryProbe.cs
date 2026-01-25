@@ -5,14 +5,20 @@ namespace PaymentGateway.Api.Infrastructure.Observability
 {
     public class ApplicationInsightsTelemetryProbe(TelemetryClient client) : IObservabilityProbe
     {
-        public void PaymentRequestRejected(string fieldName)
+        public void PaymentDataRejected(string fieldName, Guid? customerReference)
         {
-            string? customerId = Baggage.GetBaggage("customer.id");
-            client.TrackEvent("PaymentRejected", new Dictionary<string, string>
+            var properties = new Dictionary<string, string>
             {
-                {"FieldName", fieldName},
-                {"CustomerId", customerId ?? ""}
-            });
+                { "FieldName", fieldName }, 
+                { "Reference", customerReference?.ToString() ?? "" }
+            };
+            client.TrackEvent("PaymentRejected", properties);
+        }
+
+        public void DuplicatePaymentRequest(Guid reference)
+        {
+            var properties = new Dictionary<string, string> { { "Reference", reference.ToString() } };
+            client.TrackEvent("DuplicatePaymentRequest", properties);
         }
     }
 }

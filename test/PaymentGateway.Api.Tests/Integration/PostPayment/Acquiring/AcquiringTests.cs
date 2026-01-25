@@ -65,7 +65,7 @@ namespace PaymentGateway.Api.Tests.Integration.PostPayment.Acquiring
             [true], [false]
         ];
 
-        private AuthorisationRequest CreateRequest(bool useFake, ScenarioType scenarioType)
+        private static AuthorisationRequest CreateRequest(bool useFake, ScenarioType scenarioType)
         {
             if (useFake)
             {
@@ -95,7 +95,7 @@ namespace PaymentGateway.Api.Tests.Integration.PostPayment.Acquiring
                     scenarioType == ScenarioType.WillAuthorise, 
                     Guid.NewGuid());
             }
-            return new HttpAcquiringBankGateway(scenarioType == ScenarioType.WillFailUnexpectedly ? _brokenClient : _normalClient);
+            return new HttpAcquiringBankGateway(scenarioType == ScenarioType.WillFailUnexpectedly ? _brokenClient! : _normalClient!);
         }
 
         public Task InitializeAsync()

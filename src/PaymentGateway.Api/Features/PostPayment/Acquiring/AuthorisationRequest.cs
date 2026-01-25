@@ -3,7 +3,7 @@ using PaymentGateway.Api.Infrastructure;
 
 namespace PaymentGateway.Api.Features.PostPayment.Acquiring
 {
-    public class AuthorisationRequest(CardNumber cardNumber, ExpiryDate expiryDate, Currency currency, AuthorisationAmount amount, Cvv cvv)
+    public class AuthorisationRequest(CardNumber cardNumber, ExpiryDate expiryDate, Currency currency, AuthorisationAmount amount, Cvv cvv, Guid reference)
     {
         public CardNumber CardNumber { get; } = cardNumber;
         
@@ -12,39 +12,40 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
         public Currency Currency { get; } = currency;
         
         public AuthorisationAmount Amount { get; } = amount;
+
+        public Guid Reference { get; } = reference;
         
         public Cvv Cvv { get; } = cvv;
 
         public bool Validate(IDateTimeProvider dateTimeProvider, IObservabilityProbe observabilityProbe)
         {
-            string customerIdentifier = CardNumber.ToString().Length > 4 ? CardNumber.ToString()[^4..] : string.Empty;
             if (!Cvv.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("Cvv");
+                observabilityProbe.PaymentDataRejected("Cvv", Reference);
                 return false;
             }
 
             if (!Amount.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("Amount");
+                observabilityProbe.PaymentDataRejected("Amount", Reference);
                 return false;
             }
 
             if (!Currency.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("Currency");
+                observabilityProbe.PaymentDataRejected("Currency", Reference);
                 return false;
             }
 
             if (!ExpiryDate.IsValid(dateTimeProvider))
             {
-                observabilityProbe.PaymentRequestRejected("ExpiryDate");
+                observabilityProbe.PaymentDataRejected("ExpiryDate", Reference);
                 return false;
             }
             
             if (!CardNumber.IsValid)
             {
-                observabilityProbe.PaymentRequestRejected("CardNumber");
+                observabilityProbe.PaymentDataRejected("CardNumber", Reference);
                 return false;
             }
 

@@ -39,8 +39,22 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("ExpiryDate", fieldName);
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("ExpiryDate", evt.FieldName);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidDates))]
+        public async Task Given_An_Invalid_Expiry_When_Validating_Then_Raises_Observability_Event_With_Customer_Reference(int expiryMonth, int expiryYear)
+        {
+            var customerReference = Guid.Parse("3de964a7-659f-42d7-b4e9-4a801863b007");
+            var payment = Payments.CreatePaymentToBeSaved(expiryMonth: expiryMonth, expiryYear: expiryYear, reference: customerReference);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            await subject.PostPaymentHandler.Handle(payment);
+
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal(customerReference, evt.CustomerReference);
         }
         
         [Fact]

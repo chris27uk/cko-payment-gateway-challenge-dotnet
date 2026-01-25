@@ -1,14 +1,11 @@
 using System.Net;
-
 using Newtonsoft.Json;
-
 using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Tests.Infrastructure;
 
 namespace PaymentGateway.Api.Tests.Integration.PostPayment
 {
     [Collection("Integration")]
-
     public class PostPaymentControllerTests : IAsyncLifetime
     {
         private HttpResponseMessage? _response;

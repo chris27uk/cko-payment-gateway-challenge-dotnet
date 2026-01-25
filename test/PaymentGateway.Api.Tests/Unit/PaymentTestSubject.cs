@@ -2,7 +2,6 @@ using PaymentGateway.Api.Features.GetPayment;
 using PaymentGateway.Api.Features.PostPayment;
 using PaymentGateway.Api.Features.PostPayment.Acquiring;
 using PaymentGateway.Api.Features.PostPayment.Idempotency;
-using PaymentGateway.Api.Features.PostPayment.Presentation;
 using PaymentGateway.Api.Infrastructure.Fakes;
 using PaymentGateway.Api.Infrastructure.Persistence;
 using PaymentGateway.Api.Tests.Infrastructure;
@@ -21,7 +20,7 @@ namespace PaymentGateway.Api.Tests.Unit
             var resilientAcquiringBankGateway = new ResilientAcquiringBankGateway(acquiringBankGateway);
             this.IdempotencyRepository = new FakeIdempotencyRepository();
             var postPaymentHandler = new PostPaymentHandler(new ResilientPaymentsRepository(repository), resilientAcquiringBankGateway, dateTimeProvider, this.ObservabilityProbe);
-            this.PostPaymentHandler = new DeduplicationPostPaymentHandler(postPaymentHandler, this.IdempotencyRepository);
+            this.PostPaymentHandler = new DeduplicationPostPaymentHandler(postPaymentHandler, this.GetPaymentsHandler, this.IdempotencyRepository, this.ObservabilityProbe);
             this.AcquiringBankGateway = acquiringBankGateway;
         }
         
@@ -37,7 +36,7 @@ namespace PaymentGateway.Api.Tests.Unit
         
         public FakeObservabilityProbe ObservabilityProbe { get; }
         
-        public static PaymentTestSubject WithPriorPayment(PostPaymentResponse savedPayment,
+        public static PaymentTestSubject WithPriorPayment(PostPaymentResponseStored savedPayment,
             bool repositoryPermanentlyFails = false,
             bool repositoryFailsAndRecovers = false)
         {

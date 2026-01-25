@@ -66,15 +66,15 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment
         }
         
         [Fact]
-        public async Task Given_A_Valid_Payment_When_Creating_A_Payment_Then_Returns_Correct_Authorisation_Code()
+        public async Task Given_A_Valid_Payment_When_Creating_A_Payment_Then_Returns_Correct_Id()
         {
-            var expectedAuthCode = Guid.Parse("5fb08418-5a00-4b70-9f6c-a9523fc7ddbe");
-            var payment = Payments.CreatePaymentToBeSaved();
-            var subject = PaymentTestSubject.WithNoPriorPayments(authCode: expectedAuthCode);
+            var reference = Guid.Parse("5fb08418-5a00-4b70-9f6c-a9523fc7ddbe");
+            var payment = Payments.CreatePaymentToBeSaved(reference: reference);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
             
             var response = await subject.PostPaymentHandler.Handle(payment);
 
-            Assert.Equal(expectedAuthCode, response.Id);
+            Assert.Equal(reference, response.Id);
         }
         
         [Fact]

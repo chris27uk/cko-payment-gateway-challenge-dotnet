@@ -1,7 +1,7 @@
 using PaymentGateway.Api.Shared;
 using PaymentGateway.Api.Tests.Infrastructure;
 
-namespace PaymentGateway.Api.Tests.Unit.GetPayment.Concurrency
+namespace PaymentGateway.Api.Tests.Unit.PostPayment.Concurrency
 {
     public class MultipleRequestsTests
     {
@@ -14,7 +14,7 @@ namespace PaymentGateway.Api.Tests.Unit.GetPayment.Concurrency
             await subject.PostPaymentHandler.Handle(payment);
             await subject.PostPaymentHandler.Handle(payment);
             
-            Assert.Equal(1, subject.PaymentRepository.AttemptCount);
+            Assert.Single(subject.PaymentRepository.Payments);
         }
         
         [Fact]
@@ -42,7 +42,7 @@ namespace PaymentGateway.Api.Tests.Unit.GetPayment.Concurrency
         }
         
         [Fact]
-        public async Task Given_Multiple_Requests_When_Processing_Payment_Then_Second_Is_Rejected()
+        public async Task Given_Multiple_Requests_When_Processing_Payment_Then_Second_Is_Authorised()
         {
             var payment = Payments.CreatePaymentToBeSaved();
             var subject = PaymentTestSubject.WithNoPriorPayments();
@@ -50,7 +50,19 @@ namespace PaymentGateway.Api.Tests.Unit.GetPayment.Concurrency
             await subject.PostPaymentHandler.Handle(payment);
             var response2 = await subject.PostPaymentHandler.Handle(payment);
             
-            Assert.Equal(PaymentStatus.Rejected, response2.Status);
+            Assert.Equal(PaymentStatus.Authorized, response2.Status);
+        }
+        
+        [Fact]
+        public async Task Given_Multiple_Requests_When_Processing_Payment_Then_Second_Raises_Event()
+        {
+            var payment = Payments.CreatePaymentToBeSaved();
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            await subject.PostPaymentHandler.Handle(payment);
+            await subject.PostPaymentHandler.Handle(payment);
+            
+            Assert.Single(subject.ObservabilityProbe.DuplicateRequestEvents);
         }
     }
 }

@@ -38,8 +38,22 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("CardNumber", fieldName);
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("CardNumber", evt.FieldName);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public async Task Given_An_Invalid_CardNumber_When_Validating_Then_Should_Raise_Observability_Event_With_CustomerReference(string cardNumber)
+        {
+            var customerReference = Guid.Parse("3de964a7-659f-42d7-b4e9-4a801863b007");
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber, reference: customerReference);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            await subject.PostPaymentHandler.Handle(payment);
+
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal(customerReference, evt.CustomerReference);
         }
         
         [Theory]

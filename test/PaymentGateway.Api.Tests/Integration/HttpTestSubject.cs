@@ -24,7 +24,7 @@ namespace PaymentGateway.Api.Tests.Integration
 
         public HttpClient HttpClient { get; }
 
-        public static HttpTestSubject WithExistingPayment(PostPaymentResponse payment, bool useValidationFailure = false)
+        public static HttpTestSubject WithExistingPayment(PostPaymentResponseStored payment, bool useValidationFailure = false)
         {
             var repository = new FakePaymentsRepository(false, false, [payment]);
             var (httpClient, webApplicationFactory) = CreateWebApplicationFactory(repository, useValidationFailure);

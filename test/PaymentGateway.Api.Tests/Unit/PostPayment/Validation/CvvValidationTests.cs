@@ -27,8 +27,22 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             
             await subject.PostPaymentHandler.Handle(payment);
 
-            var fieldName = subject.ObservabilityProbe.RejectedEvents.Single();
-            Assert.Equal("Cvv", fieldName);
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal("Cvv", evt.FieldName);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCvvs))]
+        public async Task Given_An_Invalid_Cvv_When_Validating_Then_Raises_Observability_Event_With_CustomerReference(string cvv)
+        {
+            var customerReference = Guid.Parse("3de964a7-659f-42d7-b4e9-4a801863b007");
+            var payment = Payments.CreatePaymentToBeSaved(cvv: cvv, reference: customerReference);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            await subject.PostPaymentHandler.Handle(payment);
+
+            var evt = subject.ObservabilityProbe.RejectedEvents.Single();
+            Assert.Equal(customerReference, evt.CustomerReference);
         }
         
         [Theory]

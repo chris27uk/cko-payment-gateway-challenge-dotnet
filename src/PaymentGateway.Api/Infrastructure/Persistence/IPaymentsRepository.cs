@@ -4,8 +4,8 @@ namespace PaymentGateway.Api.Infrastructure.Persistence
 {
     public interface IPaymentsRepository
     {
-        PostPaymentResponse? Get(Guid id);
+        PostPaymentResponseStored? Get(Guid id);
 
-        void Add(PostPaymentResponse payment);
+        void Add(PostPaymentResponseStored payment);
     }
 }

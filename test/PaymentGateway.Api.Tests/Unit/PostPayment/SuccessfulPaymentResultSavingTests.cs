@@ -80,7 +80,20 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment
             subject.PostPaymentHandler.Handle(payment);
 
             var savedPaymentDetails = subject.PaymentRepository.Payments.Single();
-            Assert.Equal(expectedAuthCode, savedPaymentDetails.Id);
+            Assert.Equal(expectedAuthCode, savedPaymentDetails.AuthorisationCode);
+        }
+        
+        [Fact]
+        public void Given_A_Valid_Payment_When_Saving_Then_Saves_Id()
+        {
+            var expectedId = Guid.Parse("4d709b2b-5976-45f4-80d3-901f6886d875");
+            var payment = Payments.CreatePaymentToBeSaved(reference: expectedId);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            subject.PostPaymentHandler.Handle(payment);
+
+            var savedPaymentDetails = subject.PaymentRepository.Payments.Single();
+            Assert.Equal(expectedId, savedPaymentDetails.Id);
         }
     }
 }

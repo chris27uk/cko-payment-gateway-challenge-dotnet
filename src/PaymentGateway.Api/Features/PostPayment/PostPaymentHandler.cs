@@ -19,7 +19,8 @@ namespace PaymentGateway.Api.Features.PostPayment
                 ExpiryDate.From(request.ExpiryMonth, request.ExpiryYear), 
                 request.Currency, 
                 request.Amount, 
-                request.Cvv);
+                request.Cvv,
+                request.Reference);
             
             if (!authorisationRequest.Validate(dateTimeProvider, observabilityProbe))
             {
@@ -27,9 +28,9 @@ namespace PaymentGateway.Api.Features.PostPayment
             }
             
             var authorisationResponse = await acquiringBankGateway.AuthorisePayment(authorisationRequest);
-            var paymentResponse = request.ToSuccessfulResponse(authorisationResponse);
+            var paymentResponse = request.ToStoredResponse(authorisationResponse);
             repository.Add(paymentResponse);
-            return paymentResponse;
+            return paymentResponse.ToPublicPostResponse();
         }
     }
 }

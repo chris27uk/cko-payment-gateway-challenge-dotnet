@@ -52,14 +52,7 @@ builder.Services
     })
     .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
-builder.Services.AddSingleton<IPostPaymentHandler, DeduplicationPostPaymentHandler>(sp =>
-    new DeduplicationPostPaymentHandler(
-        new PostPaymentHandler(
-            sp.GetRequiredService<IPaymentsRepository>(),
-            sp.GetRequiredService<IAcquiringBankGateway>(),
-            sp.GetRequiredService<IDateTimeProvider>(),
-            sp.GetRequiredService<IObservabilityProbe>()
-        ), sp.GetRequiredService<IIdempotencyStoreWithTTL>()));
+builder.Services.AddSingleton<IPostPaymentHandler, DeduplicationPostPaymentHandler>(GetPostPaymentHandler);
 builder.Services.AddSingleton<IGetPaymentHandler, GetPaymentHandler>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddSingleton<IObservabilityProbe, ApplicationInsightsTelemetryProbe>();
@@ -81,3 +74,15 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+DeduplicationPostPaymentHandler GetPostPaymentHandler(IServiceProvider sp)
+{
+    var postPaymentHandler = new PostPaymentHandler(
+        sp.GetRequiredService<IPaymentsRepository>(),
+        sp.GetRequiredService<IAcquiringBankGateway>(), sp.GetRequiredService<IDateTimeProvider>(),
+        sp.GetRequiredService<IObservabilityProbe>());
+    return new DeduplicationPostPaymentHandler(
+        postPaymentHandler, sp.GetRequiredService<IGetPaymentHandler>(),
+        sp.GetRequiredService<IIdempotencyStoreWithTTL>(),
+        sp.GetRequiredService<IObservabilityProbe>());
+}

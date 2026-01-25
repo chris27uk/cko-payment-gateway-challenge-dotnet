@@ -7,9 +7,6 @@ namespace PaymentGateway.Api.Features.Healthcheck.Presentation
     public class HealthcheckController : ControllerBase
     {
         [HttpGet]
-        public ActionResult Healthcheck()
-        {
-            return Ok();
-        }
+        public ActionResult Healthcheck() => Ok();
     }
 }

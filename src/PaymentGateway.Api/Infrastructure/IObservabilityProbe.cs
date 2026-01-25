@@ -2,6 +2,8 @@ namespace PaymentGateway.Api.Infrastructure
 {
     public interface IObservabilityProbe
     {
-        void PaymentRequestRejected(string fieldName);
+        void PaymentDataRejected(string fieldName, Guid? customerReference);
+
+        void DuplicatePaymentRequest(Guid reference);
     }
 }

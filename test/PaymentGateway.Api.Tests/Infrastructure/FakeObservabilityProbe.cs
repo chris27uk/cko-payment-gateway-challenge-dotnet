@@ -7,11 +7,17 @@ namespace PaymentGateway.Api.Tests.Infrastructure
     
     public class FakeObservabilityProbe : IObservabilityProbe
     {
-        public List<string> RejectedEvents = new();
-        
-        public void PaymentRequestRejected(string fieldName)
+        public readonly List<(string FieldName, Guid? CustomerReference)> RejectedEvents = new();
+        public readonly List<Guid> DuplicateRequestEvents = new();
+
+        public void DuplicatePaymentRequest(Guid reference)
         {
-            RejectedEvents.Add(fieldName);
+            DuplicateRequestEvents.Add(reference);
+        }
+        
+        public void PaymentDataRejected(string fieldName, Guid? customerReference)
+        {
+            RejectedEvents.Add((fieldName, customerReference));
         }
     }
 }
