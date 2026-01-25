@@ -69,6 +69,7 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
             Assert.Equal(PaymentStatus.Authorized, response.Status);
         }
         
+        // Now is set to 01/02/20
         public static IEnumerable<object[]> InvalidDates => 
         [
             [1, 2018],

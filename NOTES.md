@@ -1,20 +1,7 @@
-# Notes from technical test
-
-## Design Choices
-| Aspect             | Comments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Architecture       | The software is built using paired-down hexagonal (ports and adapters / clean / layered)  architecture. Each use case has a technology independent handler that is tested using sociable unit tests.  The presentation folder represents the entry point controllers which are tested using integration tests. The separation of technology independent handlers allows for super simple behaviour driven  tests not constrained by technical matters.                                                                                                                                                                                                                                         |
-| Observability      | The solution has been hooked up with application insights (given no other direction) which gives  us automatic visibility of dependencies and requests. This is supplemented by a (DDD) domain probe  to give additional visibility to rejections.                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Security           | Given that several high profile attacks using a brute force and social engineering element have been able to successfully recover PCI account data from customers using only the last 4 PAN digits, I have taken  the view these should not appear in the logs, thus the choice to add a separate header in the W3C  baggage header. Detailed error pages will be                                                                                                                                                                                                                                                                                                                              |
-| Concurrency        | Without implementing a feature not in the specification, I don't believe the design/contract can work for a  concurrent transaction scenario. I have taken the view that this is such a basic requirement that it should  be implemented in the simplest way possible. I have added an deduplication store that is assumed to offer  self deleting records via a TTL, and optimistic concurrency.  I am aware this is open to criticism for  implementing functionality beyond the specification. In a real world scenario I would attempt to influence  the client contract to include a natural idempotency key as this would allow us to no-op and instead do a "get" lookup on duplicates. |
-| Resiliency         | The acquiring party (as simulated) has no capability to void transactions and the availability of a service bus is not socialised in the requirements. Thus I have only implemented basic sub-second retries using Polly. This means there is an unsupported edge case (flaw/bug) in the solution where a payment  has been made but it has not been saved. In a real world scenario I would seek business opinion on this.                                                                                                                                                                                                                                                                    |
-| Performance        | The solution contains no performance tests. Given there are no non-functional requirements this is purely a technical matter and can be added at a later time. I would usually implement using something like NBomber.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Rest Compliance    | I have modelled a Payment as a rest container and therefore used POST to create new payments. This is consistent with the existing routes defined in the repository provided.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Solution Viability | There are no out of process or end to end tests. This is a deliberate choice, and are replaced by a liveness health check api route. This would be called by orchestration monitoring e.g. Kubernetes liveness check, docker health check or environment monitoring software. The only matters that an out of process component test would cover  are dependency injection (composite root) failures.                                                                                                                                                                                                                                                                                          |
-| SOLID              | Classes are separated into clear concerns for example using ValueTypes for validation keeping the validation as close to the use case as possible, decorators for cross cutting concerns (open closed), and dependency injection for design by contract.                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+# Notes from technical test|
 
 ## Architecture
-I have included a design of the process payment use case for visualisation:
+Post process:
 ```mermaid
 flowchart LR
     %% External Inputs (Driven Adapters)
@@ -55,8 +42,61 @@ flowchart LR
     style OutputPort fill:#e1f5fe,stroke:#01579b
 ```
 
+## Design Decisions
+
+- **Functional Testing** - I have chosen to use a hexagonal architecture for the core domain to allow simple unit tests to be built. The
+  Get/PostPaymentHandler is tested with unit tests and the Get/PostPaymentController is tested with integration 
+  tests. I have used sociable unit tests to increase the test confidence and ability to refactor.
+- **Observability** - I have used a combination of application insights and a DDD domain probe to monitor the application.
+- **End To End** - I have not implemented any out of process component tests or end-to-end tests. A healthcheck
+  endpoint is added to allow orchestration tools like Kubernetes to determine the health of the application. I have 
+  provided a way to demonstrate the requests using Rider Http Client.
+- **Contract Testing** - I have used a single integration test to test the compliance of the acquiring bank fake
+  with the simulation. This is a Contract-Tested Fake and allows for all complexity around using
+  a proxy to be removed.
+- **Resiliency** - I have implemented basic resiliency using Polly retry policies (once). This resiliency approach is limited
+  by the fact that the banking simulation provided no way of performing a compensating transaction (like a void.) nor there 
+  being any existing service bus infrastructure to ensure long failures at the database eventually resolve. For an early
+  stage project this may be acceptable.
+- **Concurrency** - I have implemented a simple idempotency key to ensure that concurrent requests are not processed.
+ This is the simplest form of idempotency I could implement while also supporting the concurrent usage, which I have taken
+ the view was a standard requirement.
+
+
 ## Assumptions
-1. The purpose is a payment gateway and therefore the testing style should be robust
-2. Unused fields should be removed to comply with PCI DSS Requirements 2 and 6
-3. It is not acceptable to leave the solution as not supporting concurrent transactions
-4. There are no NFRs that require performance testing 
+
+1. The definition of authorisation amount in the spec is integer not positive integer.
+   I have interpretted this as a positive integer. There is nothing to say that the client wishes the
+   the bank to perform zero (holding) authorisations or that the acquiring bank supports negative amounts 
+   (both of which are unlikely possibilities). My thinking was that it was better to clearly fail on behaviour that is 
+   not obviously in the specification rather than allowing something the business or consumer did not expect. 
+
+2. I have attempted to keep as much of the defined spec and contracts provided as possible. This is important
+   as I do not know if there has been previous usage requiring backward compatibility (even though the specification 
+   explicitly states this is a new service.) However where the functional requirements have not been possible to implement
+   I have deviated on the Post endpoint. E.g. int to string for CVV to allow for correctly interpretting a 3 or 4 digit
+   CVV number starting with a 0.
+
+3. I have assumed introducing a new idempotency key field (reference) is acceptable than not supporting concurrent
+   transactions as this seems like it would be a common requirement. However I am aware this could be considered 
+   implementing beyond the specification. In a real situation I would seek opinion before exceeding spec.
+
+4. I have assumed a standard interpretation of the auth-code field. That it: should be stored internally and never 
+   exposed to anyone - I am unsure if the auth_code field is the real auth-code but the risk is enough that I have been
+   cautious. Thus: I have changed the payment repository to store it, and not expose to the client. This would be 
+   backward compatible as only an additional field is added.
+
+5. I have assumed that as we are implementing a payment service that the level of testing should be sustantial. In
+   reality this would be a matter of risk tolerence.
+
+6. On security side I have assumed that unused fields (like the last 4 digits on the Post request) should be removed
+   in compliance with requirements 2 and 6 of the PCI DSS.
+
+7. I have assumed there are no non-functional requirements that would necesscitate the immediate addition of performance
+   tests. In reality a useful performance test could not be produced until an understanding of the third party's latency
+   was achieved and thus writing this test would entirely be waste at this time.
+
+8. On observability: I have assumed in the absence of any other direction that it is acceptable to use
+   application insights rather than an abstraction as this significantly reduced efforts.
+
+9. Exhaustive testing is generally not considered sensible and I have tested only at boundaries.
