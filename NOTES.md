@@ -90,25 +90,28 @@ flowchart LR
    transactions as this seems like it would be a common requirement. However I am aware this could be considered 
    implementing beyond the specification. In a real situation I would seek opinion before exceeding spec.
 
-4. I have assumed a standard interpretation of the auth-code field. That it: should be stored internally and never 
+4. I have introduced an idempotency store fake. This is expected (as per the code) to be replaced with a real store
+   that offers strong consistency, optimistic concurrency, and a sensible TTL on records.
+
+5. I have assumed a standard interpretation of the auth-code field. That it: should be stored internally and never 
    exposed to anyone - I am unsure if the auth_code field is the real auth-code but the risk is enough that I have been
    cautious. Thus: I have changed the payment repository to store it, and not expose to the client. This would be 
    backward compatible as only an additional field is added.
 
-5. I have assumed that as we are implementing a payment service that the level of testing should be sustantial. In
+6. I have assumed that as we are implementing a payment service that the level of testing should be sustantial. In
    reality this would be a matter of risk tolerence.
 
-6. On security side I have assumed that unused fields (like the last 4 digits on the Post request) should be removed
+7. On security side I have assumed that unused fields (like the last 4 digits on the Post request) should be removed
    in compliance with requirements 2 and 6 of the PCI DSS.
 
-7. I have assumed there are no non-functional requirements that would necesscitate the immediate addition of performance
+8. I have assumed there are no non-functional requirements that would necesscitate the immediate addition of performance
    tests. In reality a useful performance test could not be produced until an understanding of the third party's latency
    was achieved and thus writing this test would entirely be waste at this time.
 
-8. On observability: I have assumed in the absence of any other direction that it is acceptable to use
+9. On observability: I have assumed in the absence of any other direction that it is acceptable to use
    application insights rather than an abstraction as this significantly reduced efforts.
 
-9. Validation: I have assumed that the requirement for conforming to contract is absolute - and needs to be returned even
+10. Validation: I have assumed that the requirement for conforming to contract is absolute - and needs to be returned even
    where model validation fails. In reality this would be checked as it caused a slight amount of additional work.
 
-10. Exhaustive testing is generally not considered sensible (and impossible) and I have tested only at boundaries.
+11. Exhaustive testing is generally not considered sensible (and impossible) and I have tested only at boundaries.
