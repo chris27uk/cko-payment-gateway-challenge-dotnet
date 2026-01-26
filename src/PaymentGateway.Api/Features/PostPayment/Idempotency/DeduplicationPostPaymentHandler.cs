@@ -10,11 +10,11 @@ namespace PaymentGateway.Api.Features.PostPayment.Idempotency
         IIdempotencyStoreWithTTL idempotencyStore,
         IObservabilityProbe observabilityProbe) : IPostPaymentHandler
     {
-        public async Task<PostPaymentResponse> Handle(PostPaymentRequest request)
+        public async Task<PostPaymentResponse> Handle(PostPaymentRequest request, CancellationToken cancellationToken = default)
         {
             if (await idempotencyStore.Add(request.Reference))
             {
-                return await postPaymentHandler.Handle(request);
+                return await postPaymentHandler.Handle(request, cancellationToken);
             }
 
             observabilityProbe.DuplicatePaymentRequest(request.Reference);

@@ -72,6 +72,12 @@ flowchart LR
 - **REST** - I have modelled a payment as a REST resource. This seems to follow with assumptions made by the code up 
   to this point. I.e. the new route is POST /Payments to create a new payment.
 
+## Known Issues
+
+- There is a bug in the idempotency store where the idempotency record will be
+  written and the response not saved. It is a low volume edge case that would require
+  substantial effort to fix changing the way that the responses are saved.
+
 ## Assumptions
 
 1. The definition of authorisation amount in the spec is integer not positive integer.

@@ -7,5 +7,7 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring.ValueTypes
         public Guid Value { get; } = value;
         
         public bool IsValid { get; } = value != Guid.Empty;
+        
+        public override string ToString() => Value.ToString();
     }
 }

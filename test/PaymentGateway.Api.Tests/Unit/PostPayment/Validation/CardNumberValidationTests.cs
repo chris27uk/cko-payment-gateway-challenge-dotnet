@@ -67,10 +67,83 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Validation
 
             Assert.Equal(PaymentStatus.Rejected, response.Status);
         }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public async Task Given_An_Invalid_CardNumber_When_Validating_Then_Last_Four_Digits_Zero(string cardNumber)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            var response = await subject.PostPaymentHandler.Handle(payment);
+
+            Assert.Equal(0, response.CardNumberLastFour);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public async Task Given_An_Invalid_CardNumber_When_Validating_Then_Has_Id(string cardNumber)
+        {
+            var expectedReference = Guid.Parse("3de964a7-659f-42d7-b4e9-4a801863b007");
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber, reference: expectedReference);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            var response = await subject.PostPaymentHandler.Handle(payment);
+
+            Assert.Equal(expectedReference, response.Id);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public async Task Given_An_Invalid_CardNumber_When_Validating_Then_Has_Amount(string cardNumber)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            var response = await subject.PostPaymentHandler.Handle(payment);
+
+            Assert.Equal(payment.Amount, response.Amount);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public async Task Given_An_Invalid_CardNumber_When_Validating_Then_Has_Expiry_Month(string cardNumber)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            var response = await subject.PostPaymentHandler.Handle(payment);
+
+            Assert.Equal(payment.ExpiryMonth, response.ExpiryMonth);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public async Task Given_An_Invalid_CardNumber_When_Validating_Then_Has_Expiry_Year(string cardNumber)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            var response = await subject.PostPaymentHandler.Handle(payment);
+
+            Assert.Equal(payment.ExpiryYear, response.ExpiryYear);
+        }
+        
+        [Theory]
+        [MemberData(nameof(InvalidCardNumbers))]
+        public async Task Given_An_Invalid_CardNumber_When_Validating_Then_Has_Currency(string cardNumber)
+        {
+            var payment = Payments.CreatePaymentToBeSaved(cardNumber: cardNumber);
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            
+            var response = await subject.PostPaymentHandler.Handle(payment);
+
+            Assert.Equal(payment.Currency, response.Currency);
+        }
 
         public static IEnumerable<object[]> InvalidCardNumbers => 
         [
-            ["3480014943182g4"], ["a"], ["34800149431820400000"], ["3480014943"]
+            ["3480014943182g4"], ["a"], ["34800149431820400001"], ["3480014943"]
         ];
     }
 }

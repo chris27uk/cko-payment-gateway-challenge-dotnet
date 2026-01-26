@@ -3,6 +3,7 @@ POST https://localhost:7092/api/Payments
 Content-Type: application/json
 
 {
+  "reference": "{{$uuid}}",
   "expiryMonth": 11,
   "expiryYear": 2029,
   "currency": "GBP",
@@ -24,6 +25,7 @@ POST https://localhost:7092/api/Payments
 Content-Type: application/json
 
 {
+  "reference": "{{$uuid}}",
   "expiryMonth": 13,
   "expiryYear": 2029,
   "currency": "GBP",

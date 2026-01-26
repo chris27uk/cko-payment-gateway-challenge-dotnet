@@ -70,5 +70,18 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment
             var request = subject.AcquiringBankGateway.Requests.Single();
             Assert.Equal(expectedCvv, request.Cvv.Value);
         }
+        
+        [Fact]
+        public async Task Given_A_Valid_Authorisation_Request_When_Sending_To_Acquiring_Bank_Then_Cancellation_Token_Is_Passed()
+        {
+            var payment = Payments.CreatePaymentToBeSaved();
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            var token = new CancellationTokenSource();
+            
+            await subject.PostPaymentHandler.Handle(payment, token.Token);
+
+            var tokens = subject.AcquiringBankGateway.CancellationTokens;
+            Assert.Contains(token.Token, tokens);
+        }
     }
 }

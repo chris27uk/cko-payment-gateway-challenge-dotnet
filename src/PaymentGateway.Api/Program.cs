@@ -44,7 +44,11 @@ builder.Services.AddOpenTelemetry()
 
 builder.Services
     .AddSingleton<IAcquiringBankGateway>(sp => new ResilientAcquiringBankGateway(new HttpAcquiringBankGateway(sp.GetRequiredService<HttpClient>())))
-    .AddHttpClient<IAcquiringBankGateway, HttpAcquiringBankGateway>(c => c.BaseAddress = new Uri("http://localhost:8080"))
+    .AddHttpClient<IAcquiringBankGateway, HttpAcquiringBankGateway>(c =>
+    {
+        c.BaseAddress = new Uri("http://localhost:8080");
+        c.Timeout = TimeSpan.FromSeconds(2);
+    })
     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
     {
         // Force connection refresh every 2 minutes to respect DNS changes

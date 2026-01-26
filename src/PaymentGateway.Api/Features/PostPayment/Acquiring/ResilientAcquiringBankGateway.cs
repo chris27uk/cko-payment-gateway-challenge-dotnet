@@ -7,9 +7,9 @@ namespace PaymentGateway.Api.Features.PostPayment.Acquiring
     {
         private readonly AsyncRetryPolicy _policy = Policy.Handle<AcquiringBankTransientError>().RetryAsync();
 
-        public async Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request)
+        public async Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request, CancellationToken cancellationToken)
         {
-            return await _policy.ExecuteAsync(async () => await acquiringBankGateway.AuthorisePayment(request));
+            return await _policy.ExecuteAsync(async () => await acquiringBankGateway.AuthorisePayment(request, cancellationToken));
         }
     }
 }

@@ -11,13 +11,15 @@ namespace PaymentGateway.Api.Infrastructure.Fakes
 
         public Task<bool> Add(CustomerReference reference)
         {
-            Attempts.Add(reference);
-
-            if (Attempts.Count == 1)
+            bool success = false;
+            if (Attempts.All(r => reference.Value != r.Value))
             {
                 SaveCount++;
+                success = true;
             }
-            return Task.FromResult(Attempts.Count == 1);
+            
+            Attempts.Add(reference);
+            return Task.FromResult(success);
         }
     }
 }

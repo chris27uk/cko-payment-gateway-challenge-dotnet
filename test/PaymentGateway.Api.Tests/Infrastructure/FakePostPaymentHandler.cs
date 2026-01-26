@@ -9,7 +9,7 @@ namespace PaymentGateway.Api.Tests.Infrastructure
     {
         public static readonly Guid DefaultAuthorisationCode = Guid.Parse("c741d457-6d55-4ed2-afdb-f348fcd42e8a");
         
-        public Task<PostPaymentResponse> Handle(PostPaymentRequest request)
+        public Task<PostPaymentResponse> Handle(PostPaymentRequest request, CancellationToken cancellationToken = default)
         {
             if (useValidationFailure)
             {

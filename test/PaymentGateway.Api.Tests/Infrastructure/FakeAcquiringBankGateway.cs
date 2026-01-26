@@ -12,10 +12,12 @@ namespace PaymentGateway.Api.Tests.Infrastructure
         private int _attempts = 0;
         
         public List<AuthorisationRequest> Requests { get; } = new();
+        public List<CancellationToken> CancellationTokens { get; } = new();
 
-        public Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request)
+        public Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request, CancellationToken cancellationToken)
         {
             Requests.Add(request);
+            CancellationTokens.Add(cancellationToken);
 
             if (acquiringBankAlwaysFailsTransiently)
             {

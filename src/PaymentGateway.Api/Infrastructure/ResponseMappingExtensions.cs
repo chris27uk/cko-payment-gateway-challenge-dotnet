@@ -61,16 +61,16 @@ namespace PaymentGateway.Api.Infrastructure
             {
                 return new PostPaymentResponse { Status = PaymentStatus.Rejected, Id = Guid.Empty };
             }
-            
+
             return new PostPaymentResponse
             {
                 Status = PaymentStatus.Rejected,
                 Amount = request.Amount,
                 ExpiryMonth = request.ExpiryMonth,
                 ExpiryYear = request.ExpiryYear,
-                CardNumberLastFour = 0,
+                CardNumberLastFour = 0, // we cannot be sure that the card number is safe
                 Currency = request.Currency,
-                Id = Guid.Empty
+                Id = request.Reference
             };
         }
     }

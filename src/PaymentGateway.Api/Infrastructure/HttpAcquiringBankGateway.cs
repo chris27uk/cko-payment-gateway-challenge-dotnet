@@ -7,11 +7,11 @@ namespace PaymentGateway.Api.Infrastructure
 {
     public class HttpAcquiringBankGateway(HttpClient client) : IAcquiringBankGateway
     {
-        public async Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request)
+        public async Task<AuthorisationResponse> AuthorisePayment(AuthorisationRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await client.PostAsJsonAsync("/payments", ToDto(request));
+                var response = await client.PostAsJsonAsync("/payments", ToDto(request), cancellationToken: cancellationToken);
                 response.EnsureSuccessStatusCode();
                 var deserializedResponse = await response.Content.ReadFromJsonAsync<AuthorisationResponseDto>();
                 return deserializedResponse is { Authorised: true } ? AuthorisationResponse.ForAuthorised(new Guid(deserializedResponse.AuthorisationCode!)) : AuthorisationResponse.ForDeclined();
