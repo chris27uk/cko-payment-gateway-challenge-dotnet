@@ -9,7 +9,7 @@ namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 public class GetPaymentController(IGetPaymentHandler paymentHandler) : Controller
 {
     [HttpGet("{id}")]
-    public ActionResult<GetPaymentResponse?> GetPaymentAsync(Guid id)
+    public ActionResult<GetPaymentResponse?> GetPaymentAsync(Guid id, CancellationToken cancellationToken)
     {
         Activity.Current?.AddTag("Reference", id.ToString());
         if (!ModelState.IsValid)
@@ -17,7 +17,7 @@ public class GetPaymentController(IGetPaymentHandler paymentHandler) : Controlle
             return BadRequest(GetPaymentResponse.Rejected());
         }
         
-        var payment = paymentHandler.Handle(id);
+        var payment = paymentHandler.Handle(id, cancellationToken);
         if (payment == null)
         {
             return NotFound(GetPaymentResponse.Rejected());
