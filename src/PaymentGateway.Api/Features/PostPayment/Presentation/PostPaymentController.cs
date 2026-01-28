@@ -19,7 +19,7 @@ namespace PaymentGateway.Api.Features.PostPayment.Presentation
                 return BadRequest(request.ToRejectedResponse());
             }
             
-            var result = await createPaymentHandler.Handle(request, cancellationToken);
+            var result = await createPaymentHandler.Handle(request!, cancellationToken);
             if (result.Status == PaymentStatus.Rejected)
             {
                 return BadRequest(result);

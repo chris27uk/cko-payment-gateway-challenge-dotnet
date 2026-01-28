@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Diagnostics;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace PaymentGateway.Api.Features.GetPayment.Presentation;
 
@@ -9,6 +11,7 @@ public class GetPaymentController(IGetPaymentHandler paymentHandler) : Controlle
     [HttpGet("{id}")]
     public ActionResult<GetPaymentResponse?> GetPaymentAsync(Guid id)
     {
+        Activity.Current?.AddTag("Reference", id.ToString());
         if (!ModelState.IsValid)
         {
             return BadRequest(GetPaymentResponse.Rejected());
