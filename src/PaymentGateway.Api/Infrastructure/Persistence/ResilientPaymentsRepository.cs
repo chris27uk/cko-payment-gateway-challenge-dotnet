@@ -8,8 +8,8 @@ namespace PaymentGateway.Api.Infrastructure.Persistence
     {
         private readonly Policy _policy = Policy.Handle<Exception>().Retry();
 
-        public PostPaymentResponseStored? Get(Guid id) => _policy.Execute(() => paymentsRepository.Get(id));
+        public PostPaymentResponseStored? Get(Guid id, CancellationToken cancellationToken = default) => _policy.Execute(() => paymentsRepository.Get(id, cancellationToken));
 
-        public void Add(PostPaymentResponseStored payment) => _policy.Execute(() => paymentsRepository.Add(payment));
+        public void Add(PostPaymentResponseStored payment, CancellationToken cancellationToken = default) => _policy.Execute(() => paymentsRepository.Add(payment, cancellationToken));
     }
 }

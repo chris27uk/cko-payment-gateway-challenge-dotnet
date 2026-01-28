@@ -95,5 +95,18 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment
             var savedPaymentDetails = subject.PaymentRepository.Payments.Single();
             Assert.Equal(expectedId, savedPaymentDetails.Id);
         }
+        
+        [Fact]
+        public void Given_A_Valid_Payment_When_Saving_Then_Saves_With_Cancellation_Token()
+        {
+            var payment = Payments.CreatePaymentToBeSaved();
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            using var tokenSource = new CancellationTokenSource();
+            var expectedToken = tokenSource.Token;
+            subject.PostPaymentHandler.Handle(payment, expectedToken);
+
+            var token = subject.PaymentRepository.AddCancellationTokens.Single();
+            Assert.Equal(expectedToken, token);
+        }
     }
 }

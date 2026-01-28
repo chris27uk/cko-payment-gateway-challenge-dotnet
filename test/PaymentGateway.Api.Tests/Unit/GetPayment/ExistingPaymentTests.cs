@@ -6,6 +6,20 @@ namespace PaymentGateway.Api.Tests.Unit.GetPayment
     public class ExistingPaymentTests
     {
         [Fact]
+        public void Given_An_Existing_Payment_When_Retrieving_Then_Retrieves_With_CancellationToken()
+        {
+            var id = Guid.Parse("c741d457-6d55-4ed2-afdb-f348fcd42e8a");
+            var subject = PaymentTestSubject.WithPriorPayment(Payments.CreateSavedPayment(id: id));
+            using var tokenSource = new CancellationTokenSource();
+            var expectedToken = tokenSource.Token;
+            
+            subject.GetPaymentsHandler.Handle(id, expectedToken);
+
+            var token = subject.PaymentRepository.GetCancellationTokens.Single();
+            Assert.Equal(expectedToken, token);
+        }
+        
+        [Fact]
         public void Given_An_Existing_Payment_When_Retrieving_Then_Returns_Id()
         {
             var id = Guid.Parse("c741d457-6d55-4ed2-afdb-f348fcd42e8a");

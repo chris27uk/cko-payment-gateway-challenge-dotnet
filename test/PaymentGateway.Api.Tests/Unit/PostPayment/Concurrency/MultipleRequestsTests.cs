@@ -131,6 +131,19 @@ namespace PaymentGateway.Api.Tests.Unit.PostPayment.Concurrency
         }
         
         [Fact]
+        public async Task Given_Multiple_Requests_When_Processing_Payment_Then_Calls_With_Token()
+        {
+            var payment = Payments.CreatePaymentToBeSaved();
+            var subject = PaymentTestSubject.WithNoPriorPayments();
+            var token = new CancellationTokenSource().Token;
+            
+            await subject.PostPaymentHandler.Handle(payment, token);
+            await subject.PostPaymentHandler.Handle(payment, token);
+            
+            Assert.Equal(token, subject.PaymentRepository.GetCancellationTokens.Single());
+        }
+        
+        [Fact]
         public async Task Given_Multiple_Requests_When_Processing_Payment_Then_Returns_Id()
         {
             var expectedId = Guid.Parse("5fb08418-5a00-4b70-9f6c-a9523fc7ddbe");

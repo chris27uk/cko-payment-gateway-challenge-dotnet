@@ -29,7 +29,7 @@ namespace PaymentGateway.Api.Features.PostPayment
             
             var authorisationResponse = await acquiringBankGateway.AuthorisePayment(authorisationRequest, cancellationToken);
             var paymentResponse = request.ToStoredResponse(authorisationResponse);
-            repository.Add(paymentResponse);
+            repository.Add(paymentResponse, cancellationToken);
             return paymentResponse.ToPublicPostResponse();
         }
     }

@@ -4,6 +4,6 @@ namespace PaymentGateway.Api.Features.GetPayment
 {
     public interface IGetPaymentHandler
     {
-        GetPaymentResponse? Handle(Guid paymentId);
+        GetPaymentResponse? Handle(Guid paymentId, CancellationToken cancellationToken = default);
     }
 }

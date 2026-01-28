@@ -19,7 +19,7 @@ namespace PaymentGateway.Api.Features.PostPayment.Idempotency
 
             observabilityProbe.DuplicatePaymentRequest(request.Reference);
             
-            var response = getPaymentHandler.Handle(request.Reference);
+            var response = getPaymentHandler.Handle(request.Reference, cancellationToken);
             return response?.ToPublicPostResponse()!;
         }
     }

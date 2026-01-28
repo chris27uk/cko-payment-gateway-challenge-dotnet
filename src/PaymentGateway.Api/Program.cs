@@ -30,7 +30,7 @@ builder.Services.AddSwaggerGen();
 if (!builder.Environment.IsEnvironment("Testing"))
 {
     builder.Services.AddApplicationInsightsTelemetry(options => {
-        options.ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=http://localhost:8080/";
+        options.ConnectionString = "InstrumentationKey=521f459a-e643-4e20-933b-8734c72b9016";
     });
 }
 

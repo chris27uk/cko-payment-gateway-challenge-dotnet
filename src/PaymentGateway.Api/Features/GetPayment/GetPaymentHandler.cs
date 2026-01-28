@@ -5,9 +5,9 @@ namespace PaymentGateway.Api.Features.GetPayment
 {
     public class GetPaymentHandler(IPaymentsRepository paymentRepository) : IGetPaymentHandler
     {
-        public GetPaymentResponse? Handle(Guid paymentId)
+        public GetPaymentResponse? Handle(Guid paymentId, CancellationToken cancellationToken = default)
         {
-            var postedResponse = paymentRepository.Get(paymentId);
+            var postedResponse = paymentRepository.Get(paymentId, cancellationToken);
 
             if (postedResponse == null)
             {
